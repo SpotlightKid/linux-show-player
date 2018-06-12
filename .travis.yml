@@ -8,9 +8,15 @@ branches:
   only:
     - develop
     - master
+    - building
 
 before_install:
   - docker pull francescoceruti/flatpack
+
+before_script:
+  - git clone -b gh-pages https://github.com/$TRAVIS_REPO_SLUG export/ &&
+    cp -rf export/$TRAVIS_BRANCH/repo dist/Flatpak/
+    || mkdir -p export/$TRAVIS_BRANCH
 
 script:
   - cd dist/Flatpak
@@ -28,13 +34,17 @@ cache:
     - $TRAVIS_BUILD_DIR/dist/Flatpak/.flatpak-builder
 
 before_deploy:
-  - python3 dist/travis_bintray.py
+  - rm -rf export && mkdir -p export/$TRAVIS_BRANCH
+  - cp -rf dist/Flatpak/repo/ export/$TRAVIS_BRANCH
+  - cp -rf dist/Flatpak/linux-show-player.flatpakref export/$TRAVIS_BRANCH
+  - sed -i -- 's/master/'$TRAVIS_BRANCH'/g' export/$TRAVIS_BRANCH/linux-show-player.flatpakref
 
 deploy:
-  provider: bintray
-  file: dist/bintray.json
-  user: "francescoceruti"
-  key: $BINTRAY_API_KEY
-  skip_cleanup: true # since we are building inside the working-directory
+  edge:
+    branch: v1.8.47
+  provider: pages
+  local_dir: export
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN
   on:
     all_branches: true
