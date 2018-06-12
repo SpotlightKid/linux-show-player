@@ -9,7 +9,6 @@ set -xe
 # Prepare repository
 [[ -d repo ]] || ostree init --mode=archive-z2 --repo=repo
 [[ -d repo/refs/remotes ]] || mkdir -p repo/refs/remotes && touch repo/refs/remotes/.gitkeep
-# flatpak remote-add --user --no-gpg-verify --if-not-exists repo repo
 
 # Install runtime and sdk
 flatpak --user remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
