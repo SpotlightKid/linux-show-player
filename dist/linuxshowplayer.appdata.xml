@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<component type="desktop-application">
-    <id>com.github.FrancescoCeruti.LinuxShowPlayer</id>
-    <launchable type="desktop-id">linuxshowplayer.desktop</launchable>
+<component type="desktop">
+    <id>com.github.FrancescoCeruti.LinuxShowPlayer.desktop</id>
     <metadata_license>CC-BY-3.0</metadata_license>
     <project_license>GPL-3.0+</project_license>
     <name>Linux Show Player</name>
@@ -29,6 +28,11 @@
             <li>Large media-format support thanks to GStreamer</li>
         </ul>
     </description>
+    <screenshots>
+		<screenshot type="default">
+			<image>http://linux-show-player.sourceforge.net/images/logo.png</image>
+		</screenshot>
+	</screenshots>
     <url type="homepage">http://linux-show-player.sourceforge.net</url>
     <url type="bugtracker">https://github.com/FrancescoCeruti/linux-show-player/issues</url>
     <url type="help">http://linux-show-player-users.readthedocs.io/en/latest/index.html</url>
