@@ -1,7 +1,0 @@
-[Flatpak Ref]
-Title=Linux Show Player
-Name=com.github.FrancescoCeruti.LinuxShowPlayer
-Branch=master
-Url=https://francescoceruti.github.io/linux-show-player/master/repo
-IsRuntime=False
-RuntimeRepo=https://flathub.org/repo/flathub.flatpakrepo
