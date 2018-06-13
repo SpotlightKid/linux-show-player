@@ -1,7 +1,0 @@
-[Flatpak Repo]
-Title=Linux Show Player - Flatpak
-Url=https://francescoceruti.github.io/linux-show-player/repo
-Homepage=https://github.com/FrancescoCeruti/linux-show-player
-Comment=Repository for nightly builds of Linux Show Player
-Description=Repository for nightly builds of Linux Show Player
-Icon=https://github.com/FrancescoCeruti/linux-show-player/blob/master/dist/linuxshowplayer.png
