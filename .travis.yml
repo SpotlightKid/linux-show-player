@@ -17,7 +17,7 @@ before_script:
   # Clone the flatpak repository locally
   - git clone -b gh-pages https://github.com/$TRAVIS_REPO_SLUG export/
   # Copy the repository into the "building" directory
-  - cp -rf export/repo dist/Flatpak/
+  - cp -rf export/repo dist/Flatpak/ || true
 
 script:
   # Enter the flatpak buid directory
