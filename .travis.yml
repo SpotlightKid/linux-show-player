@@ -6,7 +6,7 @@ python:
 
 branches:
   only:
-    - buidling
+    - building
     - develop
     - master
 
