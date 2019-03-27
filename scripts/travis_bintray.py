@@ -60,7 +60,7 @@ if TAG:
 # Files
 TEMPLATE['files'].append(
     {
-        "includePattern": "dist/Flatpak/out/LinuxShowPlayer.flatpak",
+        "includePattern": "scripts/Flatpak/out/LinuxShowPlayer.flatpak",
         "uploadPattern": '/{0}/LinuxShowPlayer.flatpak'.format(VERSION),
     }
 )

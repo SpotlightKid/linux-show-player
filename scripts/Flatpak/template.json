@@ -1,7 +1,7 @@
 {
 	"app-id": "com.github.FrancescoCeruti.LinuxShowPlayer",
 	"runtime": "org.gnome.Platform",
-	"runtime-version": "3.28",
+	"runtime-version": "3.32",
 	"sdk": "org.gnome.Sdk",
 	"command": "linux-show-player",
 	"build-options": {
@@ -23,20 +23,6 @@
     "rename-icon": "linuxshowplayer",
 	"modules": [
 		{
-			"name": "cpython",
-			"buildsystem": "simple",
-			"build-commands": [
-				"cp -r bin/ include/ lib/ share/ /app"
-			],
-			"sources": [
-				{
-					"type": "archive",
-					"url": "https://dl.bintray.com/francescoceruti/flatpak-builds/py3.7.1-freedesktop1.6.tar.gz",
-					"sha256": "d9eb119c421fee85380ef90b9d1551b564740b01d705425b79d31a71b0587531"
-				}
-			]
-		},
-		{
 			"name": "Jack",
 			"buildsystem": "simple",
 			"build-commands": [
@@ -55,26 +41,6 @@
 				"/bin"
 			]
 		},
-		{
-            "name": "gstreamer-plugins-good",
-            "config-opts": [
-				"--enable-silent-rules",
-				"--enable-experimental",
-				"--disable-monoscope",
-				"--disable-aalib",
-				"--enable-cairo",
-				"--disable-libcaca",
-				"--disable-gtk-doc-html",
-				"--with-default-visualizer=autoaudiosink"
-			],
-            "sources": [
-                 {
-                     "type": "archive",
-                     "url": "http://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-1.10.5.tar.xz",
-                     "sha256": "be053f6ed716eeb517cec148cec637cdce571c6e04d5c21409e2876fb76c7639"
-                 }
-            ]
-        },
 		{
 			"name": "RtMidi",
 			"config-opts": [
@@ -119,18 +85,26 @@
 			]
 		},
 		{
-			"name": "python-google-protobuf",
+			"name": "python-six",
 			"buildsystem": "simple",
 			"build-commands": [
-				"pip3 install --no-deps --prefix=${FLATPAK_DEST} six-1.11.0-py2.py3-none-any.whl",
-				"pip3 install --no-deps --prefix=${FLATPAK_DEST} protobuf-3.1.0.post1-py2.py3-none-any.whl"
+				"pip3 install --no-index --no-deps --prefix=${FLATPAK_DEST} six-1.11.0-py2.py3-none-any.whl"
 			],
 			"sources": [
 				{
 					"type": "file",
 					"url": "https://files.pythonhosted.org/packages/67/4b/141a581104b1f6397bfa78ac9d43d8ad29a7ca43ea90a2d863fe3056e86a/six-1.11.0-py2.py3-none-any.whl",
 					"sha256": "832dc0e10feb1aa2c68dcc57dbb658f1c7e65b9b61af69048abc87a2db00a0eb"
-				},
+				}
+			]
+		},
+		{
+			"name": "python-google-protobuf",
+			"buildsystem": "simple",
+			"build-commands": [
+				"pip3 install --no-index --no-deps --prefix=${FLATPAK_DEST} protobuf-3.1.0.post1-py2.py3-none-any.whl"
+			],
+			"sources": [
 				{
 					"type": "file",
 					"url": "https://files.pythonhosted.org/packages/a5/bb/11821bdc46cb9aad8e18618715e5e93eef44abb642ed862c4b080c474183/protobuf-3.1.0.post1-py2.py3-none-any.whl",
@@ -170,13 +144,8 @@
 		{
 			"name": "linux-show-player",
 			"buildsystem": "simple",
-			"build-options": {
-				"build-args": [
-					"--share=network"
-				]
-			},
 			"build-commands": [
-				"pip3 install --no-deps --prefix=${FLATPAK_DEST} .",
+				"pip3 install --no-index --no-deps --no-build-isolation --prefix=${FLATPAK_DEST} .",
 				"mkdir -p /app/share/applications/",
 				"cp dist/linuxshowplayer.desktop /app/share/applications/",
 				"mkdir -p /app/share/mime/packages/",

@@ -1,0 +1,60 @@
+====== INTRO ======
+
+(╯°□°）╯︵ ┻━┻
+
+The scripts/files in this folder allow to build a Flatpak bundle of
+Linux Show Player using Travis-CI.
+Currently using ubuntu 16.04 (xenial) as base system.
+
+ * build_flatpak.sh: Run this to build the flatpak
+
+ * pipenv_flatpak.py: Starting from the project Pipfile.lock generate the
+                      appropriate modules to install the python requirements
+
+ * prepare_flatpak.py: Starting from "template.json" outputs the complete
+                       manifest. Use "pipenv_flatpak.py" internally.
+
+ * template.json: The base manifest file, contains all the metadata, and the
+                  non-python packages (some exception here)
+
+====== REQUIREMENTS ======
+
+ * flatpak >= 1.0
+ * flatpak-builder
+ * Python >= 3.6
+ * (python) requests
+ * (python) html5lib
+ * BUILD_BRANCH and BUILD_COMMIT to be set.
+
+====== DETAILS ======
+
+ * The python "protobuf" package is specified directly in the template, because:
+
+   - It's needed to "build" the OLA python package, which, can only be build
+     with all the OLA framework (--enable-python-libs)
+
+   - It's not specified in the Pipfile, for the reason above, without a complete
+     OLA installation you cannot have the python package
+
+ * Protobuf requires "six" and "setuptools", we install the only first, we
+   consider the second already shipped with the cpython packages
+
+ * For python we favor pre-build "wheel" releases, which are faster to install
+
+ * The PyQt5 package from PyPi already bundle the correct Qt5 binaries
+
+
+====== NOTES ======
+
+ * Some parts are hardcoded, because I'm lazy and this scripts are designed with
+   LiSP in mind
+
+ * Non-used features of the various packages should be disabled when possible
+
+ * Until OLA 0.11 we must use protobuf < 3.2, or it will not build,
+   if needed we may patch it, for now it's fine
+
+ * The PyQt5 wheels from pypi are "all-inclusive" and quite big.
+   If we need custom build for "pyqt5" and "sip" the best approach is probably
+   to create an ad-hoc repository to produce a wheel file like the ones
+   distributed from pypi

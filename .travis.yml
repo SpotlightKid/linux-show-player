@@ -1,46 +1,44 @@
-sudo: required
-language: python
+dist: xenial
 
+language: python
 python:
   - "3.6"
 
-services:
-  - docker
-
 branches:
   only:
+    - buidling
     - develop
     - master
 
 before_install:
-  - docker pull francescoceruti/flatpack
+  - sudo add-apt-repository ppa:alexlarsson/flatpak -y
+  - sudo apt-get update -q
+  - sudo apt-get install flatpak flatpak-builder
 
-install:
-  # Required by travis_flatpak.py
+before_script:
+  # Install dependencies of 'pipenv_flatpak.py'
   - travis_retry pip3 install requests html5lib
+  # Set some variables
+  - export BUILD_BRANCH=$TRAVIS_BRANCH
+  - export BUILD_COMMIT=$TRAVIS_COMMIT
 
 script:
-  # Enter the flatpak buid directory
-  - cd dist/Flatpak
-  # Patch the flatpak manifest to work with travis
-  - python3 travis_flatpak.py
-  # Run the build in a container, mounting the current directory
-  # FIXME: if this fails at any stage the cache is not committed by travis
-  - docker run --privileged -v ${PWD}:/src -i francescoceruti/flatpack src/build.sh $TRAVIS_BRANCH
-  # Return into the build-dir
-  - cd $TRAVIS_BUILD_DIR
+  - cd scripts/Flatpak          # Enter the flatpak directory
+  - ./build_flatpak.sh          # Run the build
+  - cd $TRAVIS_BUILD_DIR        # Return into build directory
 
 cache:
   directories:
-    # Flatpak build cache, avoid rebuilding unchanged modules
-    - $TRAVIS_BUILD_DIR/dist/Flatpak/.flatpak-builder
+    - $HOME/.cache/pip
+    - $TRAVIS_BUILD_DIR/scripts/Flatpak/.flatpak-builder
 
 before_deploy:
-  - python3 dist/travis_bintray.py
+  # Generate the bintray.json manifest
+  - python3 scripts/travis_bintray.py
 
 deploy:
   provider: bintray
-  file: dist/bintray.json
+  file: scripts/bintray.json
   user: "francescoceruti"
   key: $BINTRAY_API_KEY
   skip_cleanup: true # since we are building inside the working-directory
