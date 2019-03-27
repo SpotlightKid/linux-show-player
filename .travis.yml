@@ -13,7 +13,7 @@ branches:
 before_install:
   - sudo add-apt-repository ppa:alexlarsson/flatpak -y
   - sudo apt-get update -q
-  - sudo apt-get install flatpak flatpak-builder
+  - sudo apt-get install ostree flatpak flatpak-builder
 
 before_script:
   # Install dependencies of 'pipenv_flatpak.py'
