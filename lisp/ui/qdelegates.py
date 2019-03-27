@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
-#
 # This file is part of Linux Show Player
 #
-# Copyright 2012-2018 Francesco Ceruti <ceppofrancy@gmail.com>
+# Copyright 2018 Francesco Ceruti <ceppofrancy@gmail.com>
 #
 # Linux Show Player is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,28 +15,40 @@
 # You should have received a copy of the GNU General Public License
 # along with Linux Show Player.  If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt5.QtCore import Qt, QEvent
-from PyQt5.QtWidgets import QStyledItemDelegate, QComboBox, QSpinBox, \
-    QLineEdit, QStyle, QDialog, QCheckBox
+from PyQt5.QtCore import Qt, QEvent, QPoint
+from PyQt5.QtWidgets import (
+    QStyledItemDelegate,
+    QComboBox,
+    QSpinBox,
+    QLineEdit,
+    QStyle,
+    QDialog,
+    QCheckBox,
+    QStyleOptionButton,
+    qApp,
+)
 
 from lisp.application import Application
 from lisp.cues.cue import CueAction
 from lisp.ui.qmodels import CueClassRole
 from lisp.ui.ui_utils import translate
 from lisp.ui.widgets import CueActionComboBox
+from lisp.ui.widgets.cue_actions import tr_action
+from lisp.ui.widgets.qenumcombobox import QEnumComboBox
 
 
 class LabelDelegate(QStyledItemDelegate):
     def _text(self, painter, option, index):
-        return ''
+        return ""
 
     def paint(self, painter, option, index):
         # Add 4px of left an right padding
         option.rect.adjust(4, 0, 4, 0)
 
         text = self._text(painter, option, index)
-        text = option.fontMetrics.elidedText(text, Qt.ElideRight,
-                                             option.rect.width())
+        text = option.fontMetrics.elidedText(
+            text, Qt.ElideRight, option.rect.width()
+        )
 
         painter.save()
 
@@ -114,23 +124,48 @@ class SpinBoxDelegate(QStyledItemDelegate):
         editor.setGeometry(option.rect)
 
 
-class CheckBoxDelegate(QStyledItemDelegate):
+class BoolCheckBoxDelegate(QStyledItemDelegate):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
     def createEditor(self, parent, option, index):
-        return QCheckBox(parent)
+        return None
 
-    def setEditorData(self, checkBox, index):
+    def _checkBoxRect(self, option):
+        cbRect = option.rect
+        cbSize = qApp.style().subElementRect(
+            QStyle.SE_ViewItemCheckIndicator, QStyleOptionButton(), QCheckBox()
+        )
+
+        # Center the checkbox (horizontally)
+        cbRect.moveLeft(
+            option.rect.left() + (option.rect.width() - cbSize.width()) / 2
+        )
+        return cbRect
+
+    def editorEvent(self, event, model, option, index):
+        # If the "checkbox" is left clicked change the current state
+        if event.type() == QEvent.MouseButtonRelease:
+            cbRect = self._checkBoxRect(option)
+            if event.button() == Qt.LeftButton and cbRect.contains(event.pos()):
+                value = bool(index.model().data(index, Qt.EditRole))
+                model.setData(index, not value, Qt.EditRole)
+
+                return True
+
+        return super().editorEvent(event, model, option, index)
+
+    def paint(self, painter, option, index):
         value = index.model().data(index, Qt.EditRole)
-        if isinstance(value, bool):
-            checkBox.setChecked(value)
+        cbOpt = QStyleOptionButton()
 
-    def setModelData(self, checkBox, model, index):
-        model.setData(index, checkBox.isChecked(), Qt.EditRole)
+        cbOpt.state = QStyle.State_Enabled
+        cbOpt.state |= QStyle.State_On if value else QStyle.State_Off
+        cbOpt.rect = self._checkBoxRect(option)
 
-    def updateEditorGeometry(self, editor, option, index):
-        editor.setGeometry(option.rect)
+        qApp.style().drawControl(
+            QStyle.CE_CheckBox, cbOpt, painter, QCheckBox()
+        )
 
 
 class LineEditDelegate(QStyledItemDelegate):
@@ -161,56 +196,65 @@ class LineEditDelegate(QStyledItemDelegate):
         editor.setGeometry(option.rect)
 
 
-class CueActionDelegate(LabelDelegate):
-    Mode = CueActionComboBox.Mode
+class EnumComboBoxDelegate(LabelDelegate):
+    Mode = QEnumComboBox.Mode
 
-    def __init__(self, cue_class=None, mode=Mode.Action, **kwargs):
+    def __init__(self, enum, mode=Mode.Enum, trItem=str, **kwargs):
         super().__init__(**kwargs)
-        self.cue_class = cue_class
+        self.enum = enum
         self.mode = mode
+        self.trItem = trItem
 
     def _text(self, painter, option, index):
-        value = index.data(Qt.EditRole)
-        if self.mode == CueActionDelegate.Mode.Action:
-            name = value.name
-        elif self.mode == CueActionDelegate.Mode.Name:
-            name = value
-        else:
-            name = CueAction(value).name
-
-        return translate('CueAction', name)
+        return self.trItem(self.itemFromData(index.data(Qt.EditRole)))
 
     def paint(self, painter, option, index):
         option.displayAlignment = Qt.AlignHCenter | Qt.AlignVCenter
         super().paint(painter, option, index)
 
     def createEditor(self, parent, option, index):
-        if self.cue_class is None:
-            self.cue_class = index.data(CueClassRole)
-
-        editor = CueActionComboBox(self.cue_class.CueActions,
-                                   mode=self.mode,
-                                   parent=parent)
+        editor = QEnumComboBox(
+            self.enum, mode=self.mode, trItem=self.trItem, parent=parent
+        )
         editor.setFrame(False)
 
         return editor
 
-    def setEditorData(self, comboBox, index):
-        value = index.data(Qt.EditRole)
-        if self.mode == CueActionDelegate.Mode.Action:
-            action = value
-        elif self.mode == CueActionDelegate.Mode.Name:
-            action = CueAction[value]
-        else:
-            action = CueAction(value)
+    def setEditorData(self, editor, index):
+        editor.setCurrentItem(index.data(Qt.EditRole))
 
-        comboBox.setCurrentText(translate('CueAction', action.name))
-
-    def setModelData(self, comboBox, model, index):
-        model.setData(index, comboBox.currentData(), Qt.EditRole)
+    def setModelData(self, editor, model, index):
+        model.setData(index, editor.currentData(), Qt.EditRole)
 
     def updateEditorGeometry(self, editor, option, index):
         editor.setGeometry(option.rect)
+
+    def itemFromData(self, data):
+        if self.mode == EnumComboBoxDelegate.Mode.Name:
+            return self.enum[data]
+        elif self.mode == EnumComboBoxDelegate.Mode.Value:
+            return self.enum(data)
+
+        return data
+
+
+class CueActionDelegate(EnumComboBoxDelegate):
+    Mode = CueActionComboBox.Mode
+
+    def __init__(self, cue_class=None, **kwargs):
+        super().__init__(CueAction, trItem=tr_action, **kwargs)
+        self.cue_class = cue_class
+
+    def createEditor(self, parent, option, index):
+        if self.cue_class is None:
+            self.cue_class = index.data(CueClassRole)
+
+        editor = CueActionComboBox(
+            self.cue_class.CueActions, mode=self.mode, parent=parent
+        )
+        editor.setFrame(False)
+
+        return editor
 
 
 class CueSelectionDelegate(LabelDelegate):
@@ -221,13 +265,13 @@ class CueSelectionDelegate(LabelDelegate):
     def _text(self, painter, option, index):
         cue = Application().cue_model.get(index.data())
         if cue is not None:
-            return '{} | {}'.format(cue.index, cue.name)
+            return "{} | {}".format(cue.index, cue.name)
 
-        return 'UNDEF'
+        return "UNDEF"
 
     def editorEvent(self, event, model, option, index):
         if event.type() == QEvent.MouseButtonDblClick:
-            if self.cue_select.exec_() == QDialog.Accepted:
+            if self.cue_select.exec() == QDialog.Accepted:
                 cue = self.cue_select.selected_cue()
                 if cue is not None:
                     model.setData(index, cue.id, Qt.EditRole)

@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
-#
 # This file is part of Linux Show Player
 #
-# Copyright 2012-2016 Francesco Ceruti <ceppofrancy@gmail.com>
+# Copyright 2019 Francesco Ceruti <ceppofrancy@gmail.com>
 #
 # Linux Show Player is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,18 +17,13 @@
 
 import json
 import os
-from zipfile import ZipFile, BadZipFile
+from zipfile import ZipFile
 
-from lisp import USER_DIR
+from lisp import app_dirs
 from lisp.core.actions_handler import MainActionsHandler
 from lisp.cues.cue_actions import UpdateCueAction, UpdateCuesAction
 
-try:
-    from os import scandir
-except ImportError:
-    from scandir import scandir
-
-PRESETS_DIR = os.path.join(USER_DIR, 'presets')
+PRESETS_DIR = os.path.join(app_dirs.user_data_dir, "presets")
 
 
 def preset_path(name):
@@ -47,7 +40,7 @@ def scan_presets():
 
     Every time this function is called a search in `PRESETS_DIR` is performed.
     """
-    for entry in scandir(PRESETS_DIR):
+    for entry in os.scandir(PRESETS_DIR):
         if entry.is_file():
             yield entry.name
 
@@ -72,8 +65,7 @@ def load_on_cue(preset_name, cue):
     :param cue: The cue on which load the preset
     :type cue: lisp.cue.Cue
     """
-    MainActionsHandler.do_action(
-        UpdateCueAction(load_preset(preset_name), cue))
+    MainActionsHandler.do_action(UpdateCueAction(load_preset(preset_name), cue))
 
 
 def load_on_cues(preset_name, cues):
@@ -86,7 +78,8 @@ def load_on_cues(preset_name, cues):
     :type cues: typing.Iterable[lisp.cue.Cue]
     """
     MainActionsHandler.do_action(
-        UpdateCuesAction(load_preset(preset_name), cues))
+        UpdateCuesAction(load_preset(preset_name), cues)
+    )
 
 
 def load_preset(name):
@@ -98,7 +91,7 @@ def load_preset(name):
     """
     path = preset_path(name)
 
-    with open(path, mode='r') as in_file:
+    with open(path, mode="r") as in_file:
         return json.load(in_file)
 
 
@@ -114,7 +107,7 @@ def write_preset(name, preset):
     """
     path = preset_path(name)
 
-    with open(path, mode='w') as out_file:
+    with open(path, mode="w") as out_file:
         json.dump(preset, out_file)
 
 
@@ -141,18 +134,6 @@ def delete_preset(name):
         os.remove(path)
 
 
-class PresetImportError(Exception):
-    """
-    Raised when an error occur during presets import.
-    """
-
-
-class PresetExportError(Exception):
-    """
-    Raised when an error occur during presets export.
-    """
-
-
 def export_presets(names, archive):
     """Export presets-files into an archive.
 
@@ -162,12 +143,9 @@ def export_presets(names, archive):
     :type archive: str
     """
     if names:
-        try:
-            with ZipFile(archive, mode='w') as archive:
-                for name in names:
-                    archive.write(preset_path(name), name)
-        except(OSError, BadZipFile) as e:
-            raise PresetExportError(str(e))
+        with ZipFile(archive, mode="w") as archive:
+            for name in names:
+                archive.write(preset_path(name), name)
 
 
 def import_presets(archive, overwrite=True):
@@ -178,13 +156,10 @@ def import_presets(archive, overwrite=True):
     :param overwrite: Overwrite existing files
     :type overwrite: bool
     """
-    try:
-        with ZipFile(archive) as archive:
-            for member in archive.namelist():
-                if not (preset_exists(member) and not overwrite):
-                    archive.extract(member, path=PRESETS_DIR)
-    except(OSError, BadZipFile) as e:
-        raise PresetImportError(str(e))
+    with ZipFile(archive) as archive:
+        for member in archive.namelist():
+            if not (preset_exists(member) and not overwrite):
+                archive.extract(member, path=PRESETS_DIR)
 
 
 def import_has_conflicts(archive):
@@ -194,13 +169,10 @@ def import_has_conflicts(archive):
     :type archive: str
     :rtype: bool
     """
-    try:
-        with ZipFile(archive) as archive:
-            for member in archive.namelist():
-                if preset_exists(member):
-                    return True
-    except(OSError, BadZipFile) as e:
-        raise PresetImportError(str(e))
+    with ZipFile(archive) as archive:
+        for member in archive.namelist():
+            if preset_exists(member):
+                return True
 
     return False
 
@@ -213,12 +185,9 @@ def import_conflicts(archive):
     """
     conflicts = []
 
-    try:
-        with ZipFile(archive) as archive:
-            for member in archive.namelist():
-                if preset_exists(member):
-                    conflicts.append(member)
-    except(OSError, BadZipFile) as e:
-        raise PresetImportError(str(e))
+    with ZipFile(archive) as archive:
+        for member in archive.namelist():
+            if preset_exists(member):
+                conflicts.append(member)
 
     return conflicts

@@ -1,5 +1,8 @@
-language: generic
 sudo: required
+language: python
+
+python:
+  - "3.6"
 
 services:
   - docker
@@ -11,6 +14,10 @@ branches:
 
 before_install:
   - docker pull francescoceruti/flatpack
+
+install:
+  # Required by travis_flatpak.py
+  - travis_retry pip3 install requests html5lib
 
 script:
   # Enter the flatpak buid directory

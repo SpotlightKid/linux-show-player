@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
-#
 # This file is part of Linux Show Player
 #
-# Copyright 2012-2017 Francesco Ceruti <ceppofrancy@gmail.com>
+# Copyright 2017 Francesco Ceruti <ceppofrancy@gmail.com>
 #
 # Linux Show Player is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,10 +23,10 @@ from lisp.core.util import typename
 
 
 class Session(HasInstanceProperties):
-    layout_type = Property(default='')
+    layout_type = Property(default="")
     layout = Property(default={})
 
-    session_file = Property(default='')
+    session_file = Property(default="")
 
     def __init__(self, layout):
         super().__init__()
@@ -44,25 +42,25 @@ class Session(HasInstanceProperties):
         if self.session_file:
             return os.path.splitext(os.path.basename(self.session_file))[0]
         else:
-            return 'Untitled'
+            return "Untitled"
 
-    def path(self):
+    def dir(self):
         """Return the current session-file path."""
         if self.session_file:
             return os.path.dirname(self.session_file)
         else:
-            return os.path.expanduser('~')
+            return os.path.expanduser("~")
 
     def abs_path(self, rel_path):
         """Return an absolute version of the given path."""
         if not os.path.isabs(rel_path):
-            return os.path.normpath(os.path.join(self.path(), rel_path))
+            return os.path.normpath(os.path.join(self.dir(), rel_path))
 
         return rel_path
 
     def rel_path(self, abs_path):
         """Return a relative (to the session-file) version of the given path."""
-        return os.path.relpath(abs_path, start=self.path())
+        return os.path.relpath(abs_path, start=self.dir())
 
     def finalize(self):
         self.layout.finalize()

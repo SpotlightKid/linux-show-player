@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
-#
 # This file is part of Linux Show Player
 #
-# Copyright 2012-2016 Francesco Ceruti <ceppofrancy@gmail.com>
+# Copyright 2016 Francesco Ceruti <ceppofrancy@gmail.com>
 #
 # Linux Show Player is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,29 +24,23 @@ class QDetailedMessageBox(QMessageBox):
     @staticmethod
     def dcritical(title, text, detailed_text, parent=None):
         """MessageBox with "Critical" icon"""
-        QDetailedMessageBox.dgeneric(title,
-                                     text,
-                                     detailed_text,
-                                     QMessageBox.Critical,
-                                     parent)
+        QDetailedMessageBox.dgeneric(
+            title, text, detailed_text, QMessageBox.Critical, parent
+        )
 
     @staticmethod
     def dwarning(title, text, detailed_text, parent=None):
         """MessageBox with "Warning" icon"""
-        QDetailedMessageBox.dgeneric(title,
-                                     text,
-                                     detailed_text,
-                                     QMessageBox.Warning,
-                                     parent)
+        QDetailedMessageBox.dgeneric(
+            title, text, detailed_text, QMessageBox.Warning, parent
+        )
 
     @staticmethod
     def dinformation(title, text, detailed_text, parent=None):
         """MessageBox with "Information" icon"""
-        QDetailedMessageBox.dgeneric(title,
-                                     text,
-                                     detailed_text,
-                                     QMessageBox.Information,
-                                     parent)
+        QDetailedMessageBox.dgeneric(
+            title, text, detailed_text, QMessageBox.Information, parent
+        )
 
     @staticmethod
     def dgeneric(title, text, detail_text, icon, parent=None):
@@ -59,9 +51,9 @@ class QDetailedMessageBox(QMessageBox):
         messageBox.setWindowTitle(title)
         messageBox.setText(text)
         # Show the detail text only if not an empty string
-        if detail_text.strip() != '':
+        if detail_text.strip() != "":
             messageBox.setDetailedText(detail_text)
         messageBox.addButton(QMessageBox.Ok)
         messageBox.setDefaultButton(QMessageBox.Ok)
 
-        messageBox.exec_()
+        messageBox.exec()

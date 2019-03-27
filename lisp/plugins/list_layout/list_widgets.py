@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
-#
 # This file is part of Linux Show Player
 #
-# Copyright 2012-2017 Francesco Ceruti <ceppofrancy@gmail.com>
+# Copyright 2017 Francesco Ceruti <ceppofrancy@gmail.com>
 #
 # Linux Show Player is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,6 +24,7 @@ from lisp.core.util import strtime
 from lisp.cues.cue import CueNextAction, CueState
 from lisp.cues.cue_time import CueTime, CueWaitTime
 from lisp.ui.icons import IconTheme
+from lisp.ui.widgets.cue_next_actions import tr_next_action
 
 
 class IndexWidget(QLabel):
@@ -34,7 +33,7 @@ class IndexWidget(QLabel):
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setAlignment(Qt.AlignCenter)
 
-        item.cue.changed('index').connect(self.__update, Connection.QtQueued)
+        item.cue.changed("index").connect(self.__update, Connection.QtQueued)
         self.__update(item.cue.index)
 
     def __update(self, newIndex):
@@ -46,7 +45,7 @@ class NameWidget(QLabel):
         super().__init__(*args, **kwargs)
         self.setAttribute(Qt.WA_TranslucentBackground)
 
-        item.cue.changed('name').connect(self.__update, Connection.QtQueued)
+        item.cue.changed("name").connect(self.__update, Connection.QtQueued)
         self.__update(item.cue.name)
 
     def __update(self, newName):
@@ -76,13 +75,13 @@ class CueStatusIcons(QWidget):
         self.update()
 
     def _start(self):
-        self.setPixmap(IconTheme.get('led-running').pixmap(self._size()))
+        self.setPixmap(IconTheme.get("led-running").pixmap(self._size()))
 
     def _pause(self):
-        self.setPixmap(IconTheme.get('led-pause').pixmap(self._size()))
+        self.setPixmap(IconTheme.get("led-pause").pixmap(self._size()))
 
     def _error(self):
-        self.setPixmap(IconTheme.get('led-error').pixmap(self._size()))
+        self.setPixmap(IconTheme.get("led-error").pixmap(self._size()))
 
     def _stop(self):
         self.setPixmap(None)
@@ -121,50 +120,56 @@ class CueStatusIcons(QWidget):
                 QRect(
                     indicator_width + CueStatusIcons.MARGIN,
                     CueStatusIcons.MARGIN,
-                    status_size, status_size
+                    status_size,
+                    status_size,
                 ),
-                self._statusPixmap
+                self._statusPixmap,
             )
 
         qp.end()
 
 
 class NextActionIcon(QLabel):
-    STYLESHEET = 'background: transparent; padding-left: 1px'
+    STYLESHEET = "background: transparent;"
     SIZE = 16
 
     def __init__(self, item, *args):
         super().__init__(*args)
         self.setStyleSheet(self.STYLESHEET)
+        self.setAlignment(Qt.AlignCenter)
 
-        item.cue.changed('next_action').connect(
-            self.__update, Connection.QtQueued)
+        item.cue.changed("next_action").connect(
+            self.__update, Connection.QtQueued
+        )
         self.__update(item.cue.next_action)
 
     def __update(self, next_action):
         next_action = CueNextAction(next_action)
-        pixmap = IconTheme.get('').pixmap(self.SIZE)
+        pixmap = IconTheme.get("").pixmap(self.SIZE)
 
-        if next_action == CueNextAction.AutoNext:
-            pixmap = IconTheme.get('auto-next').pixmap(self.SIZE)
-            self.setToolTip(CueNextAction.AutoNext.value)
-        elif next_action == CueNextAction.AutoFollow:
-            pixmap = IconTheme.get('auto-follow').pixmap(self.SIZE)
-            self.setToolTip(CueNextAction.AutoFollow.value)
-        else:
-            self.setToolTip('')
+        if (
+            next_action == CueNextAction.TriggerAfterWait
+            or next_action == CueNextAction.TriggerAfterEnd
+        ):
+            pixmap = IconTheme.get("cue-trigger-next").pixmap(self.SIZE)
+        elif (
+            next_action == CueNextAction.SelectAfterWait
+            or next_action == CueNextAction.SelectAfterEnd
+        ):
+            pixmap = IconTheme.get("cue-select-next").pixmap(self.SIZE)
+
+        self.setToolTip(tr_next_action(next_action))
 
         self.setPixmap(pixmap)
 
 
 class TimeWidget(QProgressBar):
-
     def __init__(self, item, *args):
         super().__init__(*args)
-        self.setObjectName('ListTimeWidget')
+        self.setObjectName("ListTimeWidget")
         self.setValue(0)
         self.setTextVisible(True)
-        font = QFont('Monospace')
+        font = QFont("Monospace")
         font.setStyleHint(QFont.Monospace)
         self.setFont(font)
 
@@ -188,28 +193,27 @@ class TimeWidget(QProgressBar):
             self.setTextVisible(False)
 
     def _update_style(self, state):
-        self.setProperty('state', state)
+        self.setProperty("state", state)
         self.style().unpolish(self)
         self.style().polish(self)
 
     def _running(self):
-        self._update_style('running')
+        self._update_style("running")
 
     def _pause(self):
-        self._update_style('pause')
+        self._update_style("pause")
         self._update_time(self.value())
 
     def _stop(self):
-        self._update_style('stop')
+        self._update_style("stop")
         self.setValue(self.minimum())
 
     def _error(self):
-        self._update_style('error')
+        self._update_style("error")
         self.setValue(self.minimum())
 
 
 class CueTimeWidget(TimeWidget):
-
     def __init__(self, *args):
         super().__init__(*args)
 
@@ -219,8 +223,9 @@ class CueTimeWidget(TimeWidget):
         self.cue.paused.connect(self._pause, Connection.QtQueued)
         self.cue.error.connect(self._error, Connection.QtQueued)
         self.cue.end.connect(self._stop, Connection.QtQueued)
-        self.cue.changed('duration').connect(
-            self._update_duration, Connection.QtQueued)
+        self.cue.changed("duration").connect(
+            self._update_duration, Connection.QtQueued
+        )
 
         self.cue_time = CueTime(self.cue)
         self.cue_time.notify.connect(self._update_time, Connection.QtQueued)
@@ -240,7 +245,6 @@ class CueTimeWidget(TimeWidget):
 
 
 class PreWaitWidget(TimeWidget):
-
     def __init__(self, *args):
         super().__init__(*args)
         self.show_zero_duration = True
@@ -249,8 +253,9 @@ class PreWaitWidget(TimeWidget):
         self.cue.prewait_stopped.connect(self._stop, Connection.QtQueued)
         self.cue.prewait_paused.connect(self._pause, Connection.QtQueued)
         self.cue.prewait_ended.connect(self._stop, Connection.QtQueued)
-        self.cue.changed('pre_wait').connect(
-            self._update_duration, Connection.QtQueued)
+        self.cue.changed("pre_wait").connect(
+            self._update_duration, Connection.QtQueued
+        )
 
         self._update_duration(self.cue.pre_wait)
 
@@ -267,13 +272,13 @@ class PreWaitWidget(TimeWidget):
 
 
 class PostWaitWidget(TimeWidget):
-
     def __init__(self, *args):
         super().__init__(*args)
         self.show_zero_duration = True
 
-        self.cue.changed('next_action').connect(
-            self._next_action_changed, Connection.QtQueued)
+        self.cue.changed("next_action").connect(
+            self._next_action_changed, Connection.QtQueued
+        )
 
         self.wait_time = CueWaitTime(self.cue, mode=CueWaitTime.Mode.Post)
         self.cue_time = CueTime(self.cue)
@@ -281,7 +286,10 @@ class PostWaitWidget(TimeWidget):
         self._next_action_changed(self.cue.next_action)
 
     def _update_duration(self, duration):
-        if self.cue.next_action != CueNextAction.AutoFollow.value:
+        if (
+            self.cue.next_action == CueNextAction.TriggerAfterWait
+            or self.cue.next_action == CueNextAction.SelectAfterWait
+        ):
             # The wait time is in seconds, we need milliseconds
             duration *= 1000
 
@@ -303,18 +311,22 @@ class PostWaitWidget(TimeWidget):
         self.cue_time.notify.disconnect(self._update_time)
         self.wait_time.notify.disconnect(self._update_time)
 
-        self.cue.changed('post_wait').disconnect(self._update_duration)
-        self.cue.changed('duration').disconnect(self._update_duration)
+        self.cue.changed("post_wait").disconnect(self._update_duration)
+        self.cue.changed("duration").disconnect(self._update_duration)
 
-        if next_action == CueNextAction.AutoFollow.value:
+        if (
+            next_action == CueNextAction.TriggerAfterEnd
+            or next_action == CueNextAction.SelectAfterEnd
+        ):
             self.cue.interrupted.connect(self._stop, Connection.QtQueued)
             self.cue.started.connect(self._running, Connection.QtQueued)
             self.cue.stopped.connect(self._stop, Connection.QtQueued)
             self.cue.paused.connect(self._pause, Connection.QtQueued)
             self.cue.error.connect(self._stop, Connection.QtQueued)
             self.cue.end.connect(self._stop, Connection.QtQueued)
-            self.cue.changed('duration').connect(
-                self._update_duration, Connection.QtQueued)
+            self.cue.changed("duration").connect(
+                self._update_duration, Connection.QtQueued
+            )
 
             self.cue_time.notify.connect(self._update_time, Connection.QtQueued)
             self._update_duration(self.cue.duration)
@@ -323,17 +335,22 @@ class PostWaitWidget(TimeWidget):
             self.cue.postwait_stopped.connect(self._stop, Connection.QtQueued)
             self.cue.postwait_paused.connect(self._pause, Connection.QtQueued)
             self.cue.postwait_ended.connect(self._stop, Connection.QtQueued)
-            self.cue.changed('post_wait').connect(
-                self._update_duration, Connection.QtQueued)
+            self.cue.changed("post_wait").connect(
+                self._update_duration, Connection.QtQueued
+            )
 
             self.wait_time.notify.connect(
-                self._update_time, Connection.QtQueued)
+                self._update_time, Connection.QtQueued
+            )
             self._update_duration(self.cue.post_wait)
 
     def _stop(self):
         super()._stop()
 
-        if self.cue.next_action == CueNextAction.AutoFollow.value:
+        if (
+            self.cue.next_action == CueNextAction.TriggerAfterEnd
+            or self.cue.next_action == CueNextAction.SelectAfterEnd
+        ):
             self._update_duration(self.cue.duration)
         else:
             self._update_duration(self.cue.post_wait)

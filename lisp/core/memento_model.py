@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
-#
 # This file is part of Linux Show Player
 #
-# Copyright 2012-2016 Francesco Ceruti <ceppofrancy@gmail.com>
+# Copyright 2016 Francesco Ceruti <ceppofrancy@gmail.com>
 #
 # Linux Show Player is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,9 +15,14 @@
 # You should have received a copy of the GNU General Public License
 # along with Linux Show Player.  If not, see <http://www.gnu.org/licenses/>.
 
+from contextlib import contextmanager
+
 from lisp.core.actions_handler import MainActionsHandler
-from lisp.core.memento_model_actions import AddItemAction, RemoveItemAction, \
-    MoveItemAction
+from lisp.core.memento_model_actions import (
+    AddItemAction,
+    RemoveItemAction,
+    MoveItemAction,
+)
 from lisp.core.proxy_model import ReadOnlyProxyModel
 
 
@@ -54,18 +57,21 @@ class MementoModel(ReadOnlyProxyModel):
         if not self._locked:
             self._handler.do_action(self._remove_action(self, self.model, item))
 
-    def lock(self):
-        self._locked = True
-
-    def unlock(self):
-        self._locked = False
-
     def _model_reset(self):
         """Reset cannot be reverted"""
 
+    @contextmanager
+    def lock(self):
+        self._locked = True
+
+        try:
+            yield self
+        finally:
+            self._locked = False
+
 
 class MementoModelAdapter(MementoModel):
-    """Extension of the MementoModel that use a ModelAdapter as a base-model"""
+    """Extension of the MementoModel that can handle ModelAdapter(s)."""
 
     def __init__(self, model_adapter, handler=None):
         super().__init__(model_adapter, handler)
@@ -76,4 +82,5 @@ class MementoModelAdapter(MementoModel):
     def _item_moved(self, old_index, new_index):
         if not self._locked:
             self._handler.do_action(
-                self._move_action(self, self.model, old_index, new_index))
+                self._move_action(self, self.model, old_index, new_index)
+            )

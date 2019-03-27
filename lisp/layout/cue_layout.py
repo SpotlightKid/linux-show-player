@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
-#
 # This file is part of Linux Show Player
 #
-# Copyright 2012-2016 Francesco Ceruti <ceppofrancy@gmail.com>
+# Copyright 2016 Francesco Ceruti <ceppofrancy@gmail.com>
 #
 # Linux Show Player is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,11 +30,11 @@ from lisp.ui.ui_utils import adjust_widget_position
 
 class CueLayout(HasProperties):
     # Layout name
-    NAME = 'Base'
+    NAME = "Base"
     # Layout short description
-    DESCRIPTION = 'No description'
+    DESCRIPTION = "No description"
     # Layout details (some useful info)
-    DETAILS = ''
+    DETAILS = ""
 
     CuesMenu = CueContextMenu()
 
@@ -47,11 +45,11 @@ class CueLayout(HasProperties):
         super().__init__()
         self.app = application
 
-        self.cue_executed = Signal()    # After a cue is executed
-        self.all_executed = Signal()    # After execute_all is called
+        self.cue_executed = Signal()  # After a cue is executed
+        self.all_executed = Signal()  # After execute_all is called
 
         # TODO: self.standby_changed = Signal()
-        self.key_pressed = Signal()     # After a key is pressed
+        self.key_pressed = Signal()  # After a key is pressed
 
     @property
     def cue_model(self):
@@ -149,25 +147,25 @@ class CueLayout(HasProperties):
             self.all_executed.emit(action)
 
     def stop_all(self):
-        if self.app.conf.get('layout.stopAllFade', False):
+        if self.app.conf.get("layout.stopAllFade", False):
             self.execute_all(CueAction.FadeOutStop)
         else:
             self.execute_all(CueAction.Stop)
 
     def interrupt_all(self):
-        if self.app.conf.get('layout.interruptAllFade', False):
+        if self.app.conf.get("layout.interruptAllFade", False):
             self.execute_all(CueAction.FadeOutInterrupt)
         else:
             self.execute_all(CueAction.Interrupt)
 
     def pause_all(self):
-        if self.app.conf.get('layout.pauseAllFade', False):
+        if self.app.conf.get("layout.pauseAllFade", False):
             self.execute_all(CueAction.FadeOutPause)
         else:
-            self.execute_all(CueAction.FadeOut)
+            self.execute_all(CueAction.Pause)
 
     def resume_all(self):
-        if self.app.conf.get('layout.resumeAllFade', True):
+        if self.app.conf.get("layout.resumeAllFade", True):
             self.execute_all(CueAction.FadeInResume)
         else:
             self.execute_all(CueAction.Resume)
@@ -186,20 +184,21 @@ class CueLayout(HasProperties):
             MainActionsHandler.do_action(action)
 
         dialog.onApply.connect(on_apply)
-        dialog.exec_()
+        dialog.exec()
 
     def edit_cues(self, cues):
         if cues:
             # Use the greatest common superclass between the selected cues
             dialog = CueSettingsDialog(
-                greatest_common_superclass(cues), parent=self.app.window)
+                greatest_common_superclass(cues), parent=self.app.window
+            )
 
             def on_apply(settings):
                 action = UpdateCuesAction(settings, cues)
                 MainActionsHandler.do_action(action)
 
             dialog.onApply.connect(on_apply)
-            dialog.exec_()
+            dialog.exec()
 
     def show_context_menu(self, position):
         menu = self.app.window.menuEdit
@@ -218,6 +217,9 @@ class CueLayout(HasProperties):
 
     def finalize(self):
         """Destroy all the layout elements"""
+
+    def _remove_cue(self, cue):
+        self.cue_model.remove(cue)
 
     def _remove_cues(self, cues):
         for cue in cues:

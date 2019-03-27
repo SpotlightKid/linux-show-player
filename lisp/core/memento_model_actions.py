@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
-#
 # This file is part of Linux Show Player
 #
-# Copyright 2012-2016 Francesco Ceruti <ceppofrancy@gmail.com>
+# Copyright 2016 Francesco Ceruti <ceppofrancy@gmail.com>
 #
 # Linux Show Player is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,7 +23,7 @@ from lisp.core.action import Action
 class MementoAction(Action):
     """Actions created by the MementoModel to register model changes."""
 
-    __slots__ = ('_m_model', '_model')
+    __slots__ = ("_m_model", "_model")
 
     def __init__(self, m_model, model):
         super().__init__()
@@ -36,18 +34,12 @@ class MementoAction(Action):
         pass
 
     def undo(self):
-        try:
-            self._m_model.lock()
+        with self._m_model.lock():
             self.__undo__()
-        finally:
-            self._m_model.unlock()
 
     def redo(self):
-        try:
-            self._m_model.lock()
+        with self._m_model.lock():
             self.__redo__()
-        finally:
-            self._m_model.unlock()
 
     @abstractmethod
     def __undo__(self):
@@ -60,7 +52,7 @@ class MementoAction(Action):
 
 class AddItemAction(MementoAction):
 
-    __slots__ = '_item'
+    __slots__ = "_item"
 
     def __init__(self, m_model, model, item):
         super().__init__(m_model, model)
@@ -75,7 +67,7 @@ class AddItemAction(MementoAction):
 
 class RemoveItemAction(MementoAction):
 
-    __slots__ = '_item'
+    __slots__ = "_item"
 
     def __init__(self, m_model, model, item):
         super().__init__(m_model, model)
@@ -90,7 +82,7 @@ class RemoveItemAction(MementoAction):
 
 class MoveItemAction(MementoAction):
 
-    __slots__ = ('_old_index', '_new_index')
+    __slots__ = ("_old_index", "_new_index")
 
     def __init__(self, m_model, model_adapter, old_index, new_index):
         super().__init__(m_model, model_adapter)

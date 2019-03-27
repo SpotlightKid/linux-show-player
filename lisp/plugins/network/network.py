@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
-#
 # This file is part of Linux Show Player
 #
-# Copyright 2012-2017 Francesco Ceruti <ceppofrancy@gmail.com>
+# Copyright 2017 Francesco Ceruti <ceppofrancy@gmail.com>
 #
 # Linux Show Player is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,9 +24,9 @@ from lisp.plugins.network.discovery import Announcer
 
 
 class Network(Plugin):
-    Name = 'Network'
-    Description = 'Allow the application to be controlled via network.'
-    Authors = ('Francesco Ceruti', )
+    Name = "Network"
+    Description = "Allow the application to be controlled via network."
+    Authors = ("Francesco Ceruti",)
 
     def __init__(self, app):
         super().__init__(app)
@@ -40,17 +38,15 @@ class Network(Plugin):
 
         # WSGI Server
         self.server = APIServerThread(
-            Network.Config['host'],
-            Network.Config['port'],
-            self.api
+            Network.Config["host"], Network.Config["port"], self.api
         )
         self.server.start()
 
         # Announcer
         self.announcer = Announcer(
-            Network.Config['host'],
-            Network.Config['discovery.port'],
-            Network.Config['discovery.magic']
+            Network.Config["host"],
+            Network.Config["discovery.port"],
+            Network.Config["discovery.magic"],
         )
         self.announcer.start()
 

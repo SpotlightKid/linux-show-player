@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
-#
 # This file is part of Linux Show Player
 #
-# Copyright 2012-2016 Francesco Ceruti <ceppofrancy@gmail.com>
+# Copyright 2016 Francesco Ceruti <ceppofrancy@gmail.com>
 #
 # Linux Show Player is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -37,7 +35,7 @@ class QColorButton(QPushButton):
         super().__init__(*args)
         self._color = None
 
-        self.setToolTip(translate('QColorButton', 'Right click to reset'))
+        self.setToolTip(translate("QColorButton", "Right click to reset"))
         self.pressed.connect(self.onColorPicker)
 
     def setColor(self, color):
@@ -47,9 +45,10 @@ class QColorButton(QPushButton):
 
         if self._color is not None:
             self.setStyleSheet(
-                'QColorButton {{ background-color: {0}; }}'.format(self._color))
+                "QColorButton {{ background-color: {0}; }}".format(self._color)
+            )
         else:
-            self.setStyleSheet('')
+            self.setStyleSheet("")
 
     def color(self):
         return self._color
@@ -59,7 +58,7 @@ class QColorButton(QPushButton):
 
         if self._color is not None:
             dlg.setCurrentColor(QColor(self._color))
-        if dlg.exec_() == dlg.Accepted:
+        if dlg.exec() == dlg.Accepted:
             self.setColor(dlg.currentColor().name())
 
     def mousePressEvent(self, e):

@@ -1,9 +1,7 @@
-# -*- coding: utf-8 -*-
-#
 # This file is part of Linux Show Player
 #
 # Copyright 2016-2017 Aurelien Cibrario <aurelien.cibrario@gmail.com>
-# Copyright 2012-2016 Francesco Ceruti <ceppofrancy@gmail.com>
+# Copyright 2016 Francesco Ceruti <ceppofrancy@gmail.com>
 #
 # Linux Show Player is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -28,16 +26,17 @@ from .rename_ui import RenameUi
 
 
 class RenameCues(Plugin):
-    Name = 'RenameCues'
-    Authors = ('Aurelien Cibrario',)
-    Description = 'Provide a dialog for batch renaming of cues'
+    Name = "RenameCues"
+    Authors = ("Aurelien Cibrario",)
+    Description = "Provide a dialog for batch renaming of cues"
 
     def __init__(self, app):
         super().__init__(app)
 
         # Entry in mainWindow menu
         self.menuAction = QAction(
-            translate('RenameCues', 'Rename Cues'), self.app.window)
+            translate("RenameCues", "Rename Cues"), self.app.window
+        )
         self.menuAction.triggered.connect(self.rename)
 
         self.app.window.menuTools.addAction(self.menuAction)
@@ -55,7 +54,7 @@ class RenameCues(Plugin):
         # Initiate rename windows
         renameUi = RenameUi(self.app.window, selected_cues)
 
-        renameUi.exec_()
+        renameUi.exec()
 
         if renameUi.result() == QDialog.Accepted:
             MainActionsHandler.do_action(

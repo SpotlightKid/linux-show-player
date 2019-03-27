@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
-#
 # This file is part of Linux Show Player
 #
-# Copyright 2012-2016 Francesco Ceruti <ceppofrancy@gmail.com>
+# Copyright 2016 Francesco Ceruti <ceppofrancy@gmail.com>
 #
 # Linux Show Player is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -29,23 +27,20 @@ logger = logging.getLogger(__name__)
 
 class ActionsHandler:
     """Provide a classic undo/redo mechanism based on stacks."""
-    DO_ACTION_STR = '{}'
-    UNDO_ACTION_STR = translate('Actions', 'Undo: {}')
-    REDO_ACTION_STR = translate('Actions', 'Redo: {}')
 
-    def __init__(self, stack_size=-1):
+    DO_ACTION_STR = "{}"
+    UNDO_ACTION_STR = translate("Actions", "Undo: {}")
+    REDO_ACTION_STR = translate("Actions", "Redo: {}")
+
+    def __init__(self, stack_size=None):
         super().__init__()
 
         self.action_done = Signal()
         self.action_undone = Signal()
         self.action_redone = Signal()
 
-        self._undo = deque()
-        self._redo = deque()
-
-        if stack_size > 0:
-            self._undo.maxlen = stack_size
-            self._redo.maxlen = stack_size
+        self._undo = deque(maxlen=stack_size)
+        self._redo = deque(maxlen=stack_size)
 
         self._saved_action = None
 

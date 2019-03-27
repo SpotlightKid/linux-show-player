@@ -1,9 +1,7 @@
-# -*- coding: utf-8 -*-
-#
 # This file is part of Linux Show Player
 #
 # Copyright 2016-2017 Aurelien Cibrario <aurelien.cibrario@gmail.com>
-# Copyright 2012-2017 Francesco Ceruti <ceppofrancy@gmail.com>
+# Copyright 2017 Francesco Ceruti <ceppofrancy@gmail.com>
 #
 # Linux Show Player is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -31,7 +29,7 @@ class RenameCueAction(Action):
         self.app = app
 
         for renamed_cue in new_cue_list:
-            self.names[renamed_cue['id']] = renamed_cue['cue_preview']
+            self.names[renamed_cue["id"]] = renamed_cue["cue_preview"]
 
     def do(self):
         """Use stored name and exchange with current names"""
