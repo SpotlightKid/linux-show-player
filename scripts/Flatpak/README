@@ -8,6 +8,8 @@ Currently using ubuntu 16.04 (xenial) as base system.
 
  * build_flatpak.sh: Run this to build the flatpak
 
+ * config.sh: Loaded needed variables
+
  * pipenv_flatpak.py: Starting from the project Pipfile.lock generate the
                       appropriate modules to install the python requirements
 

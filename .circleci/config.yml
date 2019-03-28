@@ -1,0 +1,79 @@
+# Python CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-python/ for more details
+#
+version: 2
+jobs:
+  build:
+    branches:
+      only:
+        - master
+        - develop
+        - building
+
+    docker:
+      - image: francescoceruti/flatpak:latest
+
+    working_directory: ~/build
+
+    environment:
+      BUILD_BRANCH: $CIRCLE_BRANCH
+      BUILD_COMMIT: $CIRCLE_SHA1
+
+    steps:
+      - checkout
+
+      - run:
+          name: Load environment
+          working_directory: ~/build/scripts/Flatpak
+          command: source config.sh
+
+      - restore_cache:
+          name: Restoring pip chache
+          keys:
+            - v1-pip-{{ checksum "scripts/Flatpak/requirements.txt" }}
+
+      - run:
+          # Install python dependencies into a virtual-environment
+          name: Install pip dependencies
+          working_directory: ~/build/scripts/Flatpak
+          command: |
+            python3 -m venv ./venv
+            source ./venv/bin/activate
+            pip3 install --upgrade -r requirements.txt
+            source ./venv/bin/deactivate
+
+      - save_cache:
+          name: Saving pip chache
+          key: v1-pip-{{ checksum "scripts/Flatpak/requirements.txt" }}
+          paths:
+            - ./venv
+
+      - run:
+          name: Generate flatpak manifest
+          working_directory: ~/build/scripts/Flatpak
+          command: |
+            source ./venv/bin/activate
+            python3 prepare_flatpak.py
+            source ./venv/bin/deactivate
+
+      - restore_cache:
+          name: Restoring Flatpak build cache
+          keys:
+            - v1-flatpak-{{ checksum "scripts/Flatpak/com.github.FrancescoCeruti.LinuxShowPlayer.json" }}
+            - v1-flatpak-
+
+      - run:
+          name: Build flatpak
+          working_directory: ~/build/scripts/Flatpak
+          command: ./build_flatpak.sh
+
+      - save_cache:
+          name: Saving Flatpak build cache
+          key: v1-flatpak-{{ checksum "scripts/Flatpak/com.github.FrancescoCeruti.LinuxShowPlayer.json" }}
+          paths:
+            - scripts/Flatpak/.flatpak-builder
+
+      - store_artifacts:
+          path: test-reports
+          destination: test-reports
