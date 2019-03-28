@@ -75,5 +75,5 @@ jobs:
             - scripts/Flatpak/.flatpak-builder
 
       - store_artifacts:
-          path: test-reports
-          destination: test-reports
+          path: scripts/Flatpak/out
+          destination: build
