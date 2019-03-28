@@ -12,7 +12,7 @@ function flatpak_install_runtime() {
     echo -e "\n"
     echo "#########################################"
     echo "#    Install flatpak runtime and sdk    #"
-    echo "########################################"
+    echo "#########################################"
     echo -e "\n"
 
     flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
