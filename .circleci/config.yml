@@ -41,7 +41,7 @@ jobs:
             python3 -m venv ./venv
             source ./venv/bin/activate
             pip3 install --upgrade -r requirements.txt
-            source ./venv/bin/deactivate
+            deactivate
 
       - save_cache:
           name: Saving pip chache
@@ -55,7 +55,7 @@ jobs:
           command: |
             source ./venv/bin/activate
             python3 prepare_flatpak.py
-            source ./venv/bin/deactivate
+            deactivate
 
       - restore_cache:
           name: Restoring Flatpak build cache
