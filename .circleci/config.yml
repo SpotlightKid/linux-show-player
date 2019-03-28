@@ -24,27 +24,20 @@ jobs:
       - checkout
 
       - run:
-          name: Load environment
+          name: Install flatpak runtime/sdk
           working_directory: ~/build/scripts/Flatpak
-          command: source config.sh
+          command: source functions.sh && flatpak_install_runtime
 
       - restore_cache:
-          name: Restoring pip chache
           keys:
             - v1-pip-{{ checksum "scripts/Flatpak/requirements.txt" }}
 
       - run:
-          # Install python dependencies into a virtual-environment
-          name: Install pip dependencies
+          name: Install python scripts dependencies
           working_directory: ~/build/scripts/Flatpak
-          command: |
-            python3 -m venv ./venv
-            source ./venv/bin/activate
-            pip3 install --upgrade -r requirements.txt
-            deactivate
+          command: source functions.sh && init_venv
 
       - save_cache:
-          name: Saving pip chache
           key: v1-pip-{{ checksum "scripts/Flatpak/requirements.txt" }}
           paths:
             - ./venv
@@ -52,13 +45,9 @@ jobs:
       - run:
           name: Generate flatpak manifest
           working_directory: ~/build/scripts/Flatpak
-          command: |
-            source ./venv/bin/activate
-            python3 prepare_flatpak.py
-            deactivate
+          command: source functions.sh && flatpak_build_manifest
 
       - restore_cache:
-          name: Restoring Flatpak build cache
           keys:
             - v1-flatpak-{{ checksum "scripts/Flatpak/com.github.FrancescoCeruti.LinuxShowPlayer.json" }}
             - v1-flatpak-
@@ -66,13 +55,17 @@ jobs:
       - run:
           name: Build flatpak
           working_directory: ~/build/scripts/Flatpak
-          command: ./build_flatpak.sh
+          command: source functions.sh && flatpak_build
 
       - save_cache:
-          name: Saving Flatpak build cache
           key: v1-flatpak-{{ checksum "scripts/Flatpak/com.github.FrancescoCeruti.LinuxShowPlayer.json" }}
           paths:
             - scripts/Flatpak/.flatpak-builder
+
+      - run:
+          name: Bundle flatpak
+          working_directory: ~/build/scripts/Flatpak
+          command: source functions.sh && flatpak_bundle
 
       - store_artifacts:
           path: scripts/Flatpak/out
