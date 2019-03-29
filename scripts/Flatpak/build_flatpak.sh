@@ -23,10 +23,10 @@ echo "<<< FLATPAK_PY_VERSION = "$FLATPAK_PY_VERSION
 echo "<<< FLATPAK_APP_ID = " $FLATPAK_APP_ID
 echo "<<< FLATPAK_APP_MODULE = " $FLATPAK_APP_MODULE
 
+flatpak_add_flathub
 flatpak_install_runtime
 
 init_venv
-
 flatpak_build_manifest
 
 flatpak_build

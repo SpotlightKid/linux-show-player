@@ -8,6 +8,10 @@ function flatpak_build_manifest() {
     deactivate
 }
 
+function flatpak_add_flathub() {
+    flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+}
+
 function flatpak_install_runtime() {
     echo -e "\n"
     echo "#########################################"
@@ -15,7 +19,6 @@ function flatpak_install_runtime() {
     echo "#########################################"
     echo -e "\n"
 
-    flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
     flatpak install --user --assumeyes $FLATPAK_RUNTIME
 }
 
