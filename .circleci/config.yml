@@ -33,7 +33,7 @@ jobs:
           command: |
             docker run --privileged --volume ${PWD}:/tmp/build --name fb -it -d francescoceruti/flatpak:latest /bin/bash
             docker exec -it fb bash -c "export BUILD_BRANCH=$BUILD_BRANCH && export BUILD_COMMIT=$BUILD_COMMIT"
-            docker exec -it fb bash -c "dbus-daemon --system --fork"
+            docker exec -it fb bash -c "systemctl status dbus.socket dbus.service"
 
       - run:
           name: Install flathub Runtime & SDK
