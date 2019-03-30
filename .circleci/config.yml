@@ -33,7 +33,6 @@ jobs:
           command: |
             docker run --privileged --volume ${PWD}:/tmp/build --name fb -it -d francescoceruti/flatpak:latest /bin/bash
             docker exec -it fb bash -c "export BUILD_BRANCH=$BUILD_BRANCH && export BUILD_COMMIT=$BUILD_COMMIT"
-            docker exec -it fb bash -c 'flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo'
 
       - run:
           name: Install flathub Runtime & SDK
