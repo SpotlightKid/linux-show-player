@@ -25,20 +25,19 @@ jobs:
       - run:
           name: DOCKER ⟹ pull
           command: |
-            docker pull francescoceruti/flatpak:latest
+            docker pull flatpak/flatpak-builder:base
 
       - run:
           name: DOCKER ⟹ run
           working_directory: ~/repo/scripts/Flatpak
           command: |
-            docker run --privileged --volume ${PWD}:/tmp/build --name fb -it -d francescoceruti/flatpak:latest /bin/bash
+            docker run --privileged --volume ${PWD}:/tmp/build --name fb -it -d flatpak/flatpak-builder:base /bin/bash
             docker exec -it fb bash -c "export BUILD_BRANCH=$BUILD_BRANCH && export BUILD_COMMIT=$BUILD_COMMIT"
-            docker exec -it fb bash -c "systemctl status dbus.socket dbus.service"
 
       - run:
           name: Install flathub Runtime & SDK
           command: |
-            docker exec --privileged -it fb bash -c 'cd /tmp/build/ && source functions.sh && flatpak_install_runtime'
+            docker exec -it fb bash -c 'cd /tmp/build/ && source functions.sh && flatpak_install_runtime'
 
       - restore_cache:
           keys:
