@@ -36,7 +36,9 @@ jobs:
 
       - run:
           name: Install flathub Runtime & SDK
-          command: docker exec -it fb bash -c 'source /tmp/build/functions.sh && flatpak_install_runtime'
+          command: |
+            docker exec --privileged -it fb bash -c 'source /tmp/build/functions.sh &&
+              flatpak_add_flathub && flatpak_install_runtime'
 
       - restore_cache:
           keys:
