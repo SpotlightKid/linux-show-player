@@ -2,6 +2,16 @@
 
 source config.sh
 
+function flatpak_build_manifest_init() {
+    # Create virtual-environment
+    python3 -m venv ./venv
+
+    # Install requirements
+    source ./venv/bin/activate
+    pip3 install --upgrade -r requirements.txt
+    deactivate
+}
+
 function flatpak_build_manifest() {
     source ./venv/bin/activate
     python3 prepare_flatpak.py
@@ -63,14 +73,4 @@ function watch_process() {
     echo "Completed in $elapsed                                  "
     # Disable the trap on a normal exit.
     trap - EXIT
-}
-
-function init_venv() {
-    # Create virtual-environment
-    python3 -m venv ./venv
-
-    # Install requirements
-    source ./venv/bin/activate
-    pip3 install --upgrade -r requirements.txt
-    deactivate
 }

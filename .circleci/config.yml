@@ -11,10 +11,9 @@ jobs:
         - develop
         - building
 
-    docker:
-      - image: francescoceruti/flatpak:latest
+    machine: true
 
-    working_directory: ~/build
+    working_directory: ~/repo
 
     environment:
       BUILD_BRANCH: $CIRCLE_BRANCH
@@ -24,18 +23,29 @@ jobs:
       - checkout
 
       - run:
-          name: Install flatpak runtime/sdk
-          working_directory: ~/build/scripts/Flatpak
-          command: source functions.sh && flatpak_install_runtime
+          name: DOCKER => pull
+          command: |
+            docker pull francescoceruti/flatpak:latest
+
+      -run:
+        name: DOCKER => run
+        working_directory: ~/repo/scripts/Flatpak
+        command: |
+          docker run --privileged --volume "${PWD}":/temp/build --name fb -it -d francescoceruti/flatpak:latest /bin/bash
+          docker exec -it fb bash -c "export BUILD_BRANCH=$BUILD_BRANCH && export BUILD_COMMIT=$BUILD_COMMIT"
+
+      - run:
+          name: Install flathub Runtime & SDK
+          command: docker exec -it fb bash -c 'source functions.sh && flatpak_install_runtime'
 
       - restore_cache:
           keys:
             - v1-pip-{{ checksum "scripts/Flatpak/requirements.txt" }}
 
       - run:
-          name: Install python scripts dependencies
-          working_directory: ~/build/scripts/Flatpak
-          command: source functions.sh && init_venv
+          name: MACHINE => Install Python build-scripts dependencies
+          working_directory: ~/repo/scripts/Flatpak
+          command: source functions.sh && flatpak_build_manifest_init
 
       - save_cache:
           key: v1-pip-{{ checksum "scripts/Flatpak/requirements.txt" }}
@@ -43,8 +53,8 @@ jobs:
             - ./venv
 
       - run:
-          name: Generate flatpak manifest
-          working_directory: ~/build/scripts/Flatpak
+          name: MACHINE => Generate flatpak manifest
+          working_directory: ~/repo/scripts/Flatpak
           command: source functions.sh && flatpak_build_manifest
 
       - restore_cache:
@@ -53,20 +63,18 @@ jobs:
             - v1-flatpak-
 
       - run:
-          name: Build flatpak
-          working_directory: ~/build/scripts/Flatpak
-          command: source functions.sh && flatpak_build
+          name: DOCKER => Build flatpak
+          command: docker exec -it fb bash -c 'source functions.sh && flatpak_build'
 
       - save_cache:
           key: v1-flatpak-{{ checksum "scripts/Flatpak/com.github.FrancescoCeruti.LinuxShowPlayer.json" }}
           paths:
-            - scripts/Flatpak/.flatpak-builder
+            - /temp/build/.flatpak-builder
 
       - run:
-          name: Bundle flatpak
-          working_directory: ~/build/scripts/Flatpak
-          command: source functions.sh && flatpak_bundle
+          name: DOCKER => Bundle flatpak
+          command: docker exec -it fb bash -c 'source functions.sh && flatpak_bundle'
 
       - store_artifacts:
-          path: scripts/Flatpak/out
+          path: /temp/build/out
           destination: build

@@ -26,7 +26,7 @@ echo "<<< FLATPAK_APP_MODULE = " $FLATPAK_APP_MODULE
 flatpak_add_flathub
 flatpak_install_runtime
 
-init_venv
+flatpak_build_manifest_init
 flatpak_build_manifest
 
 flatpak_build
