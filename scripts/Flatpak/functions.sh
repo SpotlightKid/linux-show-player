@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source ${0%/*}/config.sh
+source config.sh
 
 function flatpak_build_manifest_init() {
     # Create virtual-environment
