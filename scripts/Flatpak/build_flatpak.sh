@@ -18,19 +18,14 @@ cd "${0%/*}"
 source functions.sh
 
 # Print relevant variables
-echo "<<< FLATPAK_RUNTIME = "$FLATPAK_RUNTIME
+echo "<<< FLATPAK_INSTALL = "$FLATPAK_INSTALL
 echo "<<< FLATPAK_PY_VERSION = "$FLATPAK_PY_VERSION
 echo "<<< FLATPAK_APP_ID = " $FLATPAK_APP_ID
 echo "<<< FLATPAK_APP_MODULE = " $FLATPAK_APP_MODULE
 
-flatpak_add_flathub
 flatpak_install_runtime
-
-flatpak_build_manifest_init
 flatpak_build_manifest
-
 flatpak_build
-
 flatpak_bundle
 
 echo -e "\n"

@@ -2,24 +2,17 @@
 
 source config.sh
 
-function flatpak_build_manifest_init() {
+function flatpak_build_manifest() {
     # Create virtual-environment
     python3 -m venv ./venv
 
     # Install requirements
     source ./venv/bin/activate
     pip3 install --upgrade -r requirements.txt
-    deactivate
-}
 
-function flatpak_build_manifest() {
-    source ./venv/bin/activate
+    # Build manifest
     python3 prepare_flatpak.py
     deactivate
-}
-
-function flatpak_add_flathub() {
-    flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 }
 
 function flatpak_install_runtime() {
@@ -29,7 +22,8 @@ function flatpak_install_runtime() {
     echo "#########################################"
     echo -e "\n"
 
-    flatpak install --assumeyes $FLATPAK_RUNTIME
+    flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+    flatpak install flathub --assumeyes $FLATPAK_INSTALL
 }
 
 function flatpak_build() {

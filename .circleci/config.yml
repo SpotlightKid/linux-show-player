@@ -23,48 +23,36 @@ jobs:
       - checkout
 
       - run:
-          name: Install flathub SDK
+          name: DOCKER ⟹ pull
           command: |
-              docker run --privileged --volume "${PWD}":/tmp/sdk/ --name fb -it -d flatpak/flatpak-builder:base /bin/bash
-              docker exec -it fb bash -c 'flatpak install flathub org.freedesktop.Sdk/x86_64/1.6 &&
-              flatpak install flathub org.freedesktop.Platform/x86_64/1.6'
+            docker pull francescoceruti/flatpak:latest
 
-      #- run:
-      #    name: DOCKER ⟹ pull
-      #    command: |
-      #      docker pull francescoceruti/flatpak:latest
+      - run:
+          name: DOCKER ⟹ run
+          working_directory: ~/repo/scripts/Flatpak
+          command: |
+            docker run --privileged --volume ${PWD}:/tmp/build --name fb -it -d francescoceruti/flatpak:latest /bin/bash
+            docker exec -it fb bash -c "export BUILD_BRANCH=$BUILD_BRANCH && export BUILD_COMMIT=$BUILD_COMMIT"
+            docker exec -it fb bash -c 'flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo'
 
-      #- run:
-      #    name: DOCKER ⟹ run
-      #    working_directory: ~/repo/scripts/Flatpak
-      #    command: |
-      #      docker run --privileged --volume ${PWD}:/tmp/build --name fb -it -d francescoceruti/flatpak:latest /bin/bash
-      #      docker exec -it fb bash -c "export BUILD_BRANCH=$BUILD_BRANCH && export BUILD_COMMIT=$BUILD_COMMIT"
-
-      #- run:
-      #    name: Install flathub Runtime & SDK
-      #    command: |
-      #      docker exec --privileged -it fb bash -c 'cd /tmp/build/ && source functions.sh &&
-      #        flatpak_add_flathub && flatpak_install_runtime'
+      - run:
+          name: Install flathub Runtime & SDK
+          command: |
+            docker exec --privileged -it fb bash -c 'cd /tmp/build/ && source functions.sh && flatpak_install_runtime'
 
       - restore_cache:
           keys:
             - v1-pip-{{ checksum "scripts/Flatpak/requirements.txt" }}
 
       - run:
-          name: MACHINE ⟹ Install Python build-scripts dependencies
+          name: MACHINE ⟹ Generate flatpak manifest
           working_directory: ~/repo/scripts/Flatpak
-          command: source functions.sh && flatpak_build_manifest_init
+          command: source functions.sh && flatpak_build_manifest
 
       - save_cache:
           key: v1-pip-{{ checksum "scripts/Flatpak/requirements.txt" }}
           paths:
             - ./venv
-
-      - run:
-          name: MACHINE ⟹ Generate flatpak manifest
-          working_directory: ~/repo/scripts/Flatpak
-          command: source functions.sh && flatpak_build_manifest
 
       - restore_cache:
           keys:
