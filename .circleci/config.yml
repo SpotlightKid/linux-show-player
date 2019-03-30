@@ -27,12 +27,12 @@ jobs:
           command: |
             docker pull francescoceruti/flatpak:latest
 
-      -run:
-        name: DOCKER => run
-        working_directory: ~/repo/scripts/Flatpak
-        command: |
-          docker run --privileged --volume "${PWD}":/temp/build --name fb -it -d francescoceruti/flatpak:latest /bin/bash
-          docker exec -it fb bash -c "export BUILD_BRANCH=$BUILD_BRANCH && export BUILD_COMMIT=$BUILD_COMMIT"
+      - run:
+          name: DOCKER => run
+          working_directory: ~/repo/scripts/Flatpak
+          command: |
+            docker run --privileged --volume "${PWD}":/temp/build --name fb -it -d francescoceruti/flatpak:latest /bin/bash
+            docker exec -it fb bash -c "export BUILD_BRANCH=$BUILD_BRANCH && export BUILD_COMMIT=$BUILD_COMMIT"
 
       - run:
           name: Install flathub Runtime & SDK
