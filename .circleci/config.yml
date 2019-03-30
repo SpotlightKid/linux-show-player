@@ -23,27 +23,27 @@ jobs:
       - checkout
 
       - run:
-          name: DOCKER => pull
+          name: DOCKER ⟹ pull
           command: |
             docker pull francescoceruti/flatpak:latest
 
       - run:
-          name: DOCKER => run
+          name: DOCKER ⟹ run
           working_directory: ~/repo/scripts/Flatpak
           command: |
-            docker run --privileged --volume "${PWD}":/temp/build --name fb -it -d francescoceruti/flatpak:latest /bin/bash
+            docker run --privileged --volume ${PWD}:/tmp/build --name fb -it -d francescoceruti/flatpak:latest /bin/bash
             docker exec -it fb bash -c "export BUILD_BRANCH=$BUILD_BRANCH && export BUILD_COMMIT=$BUILD_COMMIT"
 
       - run:
           name: Install flathub Runtime & SDK
-          command: docker exec -it fb bash -c 'source functions.sh && flatpak_install_runtime'
+          command: docker exec -it fb bash -c 'source /tmp/build/functions.sh && flatpak_install_runtime'
 
       - restore_cache:
           keys:
             - v1-pip-{{ checksum "scripts/Flatpak/requirements.txt" }}
 
       - run:
-          name: MACHINE => Install Python build-scripts dependencies
+          name: MACHINE ⟹ Install Python build-scripts dependencies
           working_directory: ~/repo/scripts/Flatpak
           command: source functions.sh && flatpak_build_manifest_init
 
@@ -53,7 +53,7 @@ jobs:
             - ./venv
 
       - run:
-          name: MACHINE => Generate flatpak manifest
+          name: MACHINE ⟹ Generate flatpak manifest
           working_directory: ~/repo/scripts/Flatpak
           command: source functions.sh && flatpak_build_manifest
 
@@ -63,8 +63,8 @@ jobs:
             - v1-flatpak-
 
       - run:
-          name: DOCKER => Build flatpak
-          command: docker exec -it fb bash -c 'source functions.sh && flatpak_build'
+          name: DOCKER ⟹ Build flatpak
+          command: docker exec -it fb bash -c 'source /tmp/build/functions.sh && flatpak_build'
 
       - save_cache:
           key: v1-flatpak-{{ checksum "scripts/Flatpak/com.github.FrancescoCeruti.LinuxShowPlayer.json" }}
@@ -72,8 +72,8 @@ jobs:
             - /temp/build/.flatpak-builder
 
       - run:
-          name: DOCKER => Bundle flatpak
-          command: docker exec -it fb bash -c 'source functions.sh && flatpak_bundle'
+          name: DOCKER ⟹ Bundle flatpak
+          command: docker exec -it fb bash -c 'source /tmp/build/functions.sh && flatpak_bundle'
 
       - store_artifacts:
           path: /temp/build/out
