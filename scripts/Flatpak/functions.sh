@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source config.sh
+source ${0%/*}/config.sh
 
 function flatpak_build_manifest_init() {
     # Create virtual-environment
@@ -19,7 +19,7 @@ function flatpak_build_manifest() {
 }
 
 function flatpak_add_flathub() {
-    flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+    flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 }
 
 function flatpak_install_runtime() {
@@ -29,7 +29,7 @@ function flatpak_install_runtime() {
     echo "#########################################"
     echo -e "\n"
 
-    flatpak install --user --assumeyes $FLATPAK_RUNTIME
+    flatpak install --assumeyes $FLATPAK_RUNTIME
 }
 
 function flatpak_build() {
