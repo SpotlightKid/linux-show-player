@@ -32,11 +32,19 @@ jobs:
             sudo apt-get -qq update
             sudo apt-get install -y ostree flatpak flatpak-builder
 
+      - restore_cache:
+          key: pyenv-python-3.6.8
+
       - run:
           name: Install python 3.6.8 (pyenv)
           command: |
             pyenv install 3.6.8
             pyenv global 3.6.8
+
+      - save_cache:
+          key: pyenv-python-3.6.8
+          paths:
+            - /opt/circleci/.pyenv/versions/3.6.8
 
       - run:
           name: Install flathub Runtime & SDK
@@ -50,7 +58,10 @@ jobs:
       - run:
           name: Generate flatpak manifest
           working_directory: ~/repo/scripts/Flatpak
-          command: source functions.sh && flatpak_build_manifest
+          command: |
+            export BUILD_BRANCH=$CIRCLE_BRANCH
+            export BUILD_COMMIT=$CIRCLE_SHA1
+            source functions.sh && flatpak_build_manifest
 
       - save_cache:
           key: v1-pip-{{ checksum "scripts/Flatpak/requirements.txt" }}
@@ -75,7 +86,9 @@ jobs:
       - run:
           name: Bundle flatpak
           working_directory: ~/repo/scripts/Flatpak
-          command: source functions.sh && flatpak_bundle
+          command: |
+            export BUILD_BRANCH=$CIRCLE_BRANCH
+            source functions.sh && flatpak_bundle
 
       - store_artifacts:
           path: ~/repo/scripts/Flatpak/out
