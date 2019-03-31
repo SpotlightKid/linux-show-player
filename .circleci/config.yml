@@ -33,8 +33,10 @@ jobs:
             sudo apt-get install -y ostree flatpak flatpak-builder
 
       - run:
-          name: Install python 3.6 (pyenv)
-          command: pyenv install 3.6.8
+          name: Install python 3.6.8 (pyenv)
+          command: |
+            pyenv install 3.6.8
+            pyenv global 3.6.8
 
       - run:
           name: Install flathub Runtime & SDK
