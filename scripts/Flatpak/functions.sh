@@ -18,7 +18,7 @@ function flatpak_build_manifest() {
 function flatpak_install_runtime() {
     echo -e "\n"
     echo "#########################################"
-    echo "#    Install flatpak runtime and sdk    #"
+    echo "#    Install flatpak (flathub) runtime and sdk    #"
     echo "#########################################"
     echo -e "\n"
 
