@@ -53,7 +53,8 @@ jobs:
 
       - restore_cache:
           keys:
-            - v1-pip-{{ checksum "scripts/Flatpak/requirements.txt" }}
+            - v2-pip-{{ checksum "scripts/Flatpak/requirements.txt" }}
+            - v2-pip-
 
       - run:
           name: Generate flatpak manifest
@@ -64,14 +65,14 @@ jobs:
             source functions.sh && flatpak_build_manifest
 
       - save_cache:
-          key: v1-pip-{{ checksum "scripts/Flatpak/requirements.txt" }}
+          key: v2-pip-{{ checksum "scripts/Flatpak/requirements.txt" }}
           paths:
-            - ./venv
+            - ~/repo/scripts/Flatpak/.venv
 
       - restore_cache:
           keys:
-            - v1-flatpak-{{ checksum "scripts/Flatpak/com.github.FrancescoCeruti.LinuxShowPlayer.json" }}
-            - v1-flatpak-
+            - v2-flatpak-{{ checksum "scripts/Flatpak/com.github.FrancescoCeruti.LinuxShowPlayer.json" }}
+            - v2-flatpak-
 
       - run:
           name: Build flatpak
@@ -79,9 +80,9 @@ jobs:
           command: source functions.sh && flatpak_build
 
       - save_cache:
-          key: v1-flatpak-{{ checksum "scripts/Flatpak/com.github.FrancescoCeruti.LinuxShowPlayer.json" }}
+          key: v2-flatpak-{{ checksum "scripts/Flatpak/com.github.FrancescoCeruti.LinuxShowPlayer.json" }}
           paths:
-            - .flatpak-builder
+            - ~/repo/scripts/Flatpak/.flatpak-builder
 
       - run:
           name: Bundle flatpak
