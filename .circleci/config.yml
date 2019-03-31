@@ -34,7 +34,7 @@ jobs:
 
       - run:
           name: Install python 3.6 (pyenv)
-          command: pyenv install 3.6
+          command: pyenv install 3.6.8
 
       - run:
           name: Install flathub Runtime & SDK
