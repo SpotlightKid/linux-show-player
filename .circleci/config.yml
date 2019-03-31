@@ -25,7 +25,7 @@ jobs:
 
       - run:
           name: Install flatpak / flatpak-builder
-          commnad: |
+          command: |
             apt-get update
             apt-get install -y software-properties-common python3-software-properties
             add-apt-repository -y ppa:alexlarsson/flatpak
