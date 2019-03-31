@@ -26,7 +26,7 @@ jobs:
           name: Prepare docker container
           working_directory: ~/repo/scripts/Flatpak
           command: |
-            docker run --privileged --volume ${PWD}:/tmp/build --name fb -it -d flatpak/flatpak-builder:base /bin/bash
+            docker run --privileged --volume ${PWD}:/tmp/build --name fb -it -d francescoceruti/flatpak:latest /bin/bash
             docker exec -it fb bash -c "export BUILD_BRANCH=$BUILD_BRANCH && export BUILD_COMMIT=$BUILD_COMMIT"
 
       - run:
