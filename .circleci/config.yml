@@ -23,6 +23,9 @@ jobs:
       - checkout
 
       - run:
+          command: dbus-daemon --system --fork
+
+      - run:
           name: Prepare docker container
           working_directory: ~/repo/scripts/Flatpak
           command: |
