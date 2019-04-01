@@ -19,9 +19,59 @@
 		"pip3 uninstall --yes cython || true"
 	],
 	"rename-appdata-file": "linuxshowplayer.appdata.xml",
-    "rename-desktop-file": "linuxshowplayer.desktop",
-    "rename-icon": "linuxshowplayer",
+	"rename-desktop-file": "linuxshowplayer.desktop",
+	"rename-icon": "linuxshowplayer",
 	"modules": [
+		{
+			"name": "Qt5",
+			"buildsystem": "simple",
+			"build-commands": [
+				"./configure --prefix=/app -skip qt3d -skip qtquick -skip qtqml -skip qtwebengine -skip qtwebchannel -skip qtwebglplugin -skip qttools -nomake examples -nomake tests -opensource -confirm-license",
+				"make",
+				"make install"
+			],
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://download.qt.io/official_releases/qt/5.12/5.12.2/single/qt-everywhere-src-5.12.2.zip",
+					"sha256": "1036bd65d067f70ba1384458d7a2daf574ceed36fa9321dcb3871d9810ef89e1"
+				}
+			]
+		},
+		{
+			"name": "PyQt5",
+			"buildsystem": "simple",
+			"build-commands": [
+				"python configure.py -sysroot=/app --assume-shared --confirm-license --no-designer-plugin --no-tools",
+				"make",
+				"make install"
+			],
+			"sources": [
+				{
+					"type": "archive",
+					"url": "https://www.riverbankcomputing.com/static/Downloads/PyQt5/5.12.1/PyQt5_gpl-5.12.1.tar.gz",
+					"sha256": "3718ce847d824090fd5f95ff3f13847ee75c2507368d4cbaeb48338f506e59bf"
+				}
+			],
+			"modules": [
+				{
+					"name": "SIP",
+					"buildsystem": "simple",
+					"build-commands": [
+						"python configure.py --sysroot /app --sip-module PyQt5.sip",
+						"make",
+						"make install"
+					],
+					"sources": [
+						{
+							"type": "archive",
+							"url": "https://www.riverbankcomputing.com/static/Downloads/sip/4.19.15/sip-4.19.15.tar.gz",
+							"sha256": "2b5c0b2c0266b467b365c21376d50dde61a3236722ab87ff1e8dacec283eb610"
+						}
+					]
+				}
+			]
+		},
 		{
 			"name": "Jack",
 			"buildsystem": "simple",
