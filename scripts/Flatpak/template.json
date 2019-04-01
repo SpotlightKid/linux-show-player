@@ -26,7 +26,7 @@
 			"name": "Qt5",
 			"buildsystem": "simple",
 			"build-commands": [
-				"./configure --prefix=/app -skip qt3d -skip qtquick -skip qtqml -skip qtwebengine -skip qtwebchannel -skip qtwebglplugin -skip qttools -nomake examples -nomake tests -opensource -confirm-license",
+				"./configure --prefix=/app -skip qt3d -skip qtwebengine -skip qtwebchannel -skip qtwebglplugin -skip qttools -nomake examples -nomake tests -opensource -confirm-license",
 				"make",
 				"make install"
 			],
