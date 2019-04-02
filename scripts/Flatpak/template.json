@@ -27,7 +27,7 @@
 			"buildsystem": "simple",
 			"build-commands": [
 				"./configure --prefix=/app -skip qt3d -skip qtwebengine -skip qtwebchannel -skip qtwebglplugin -skip qttools -nomake examples -nomake tests -opensource -confirm-license",
-				"make",
+				"make -j `nproc`",
 				"make install"
 			],
 			"sources": [
@@ -43,7 +43,7 @@
 			"buildsystem": "simple",
 			"build-commands": [
 				"python configure.py -sysroot=/app --assume-shared --confirm-license --no-designer-plugin --no-tools",
-				"make",
+				"make -j `nproc`",
 				"make install"
 			],
 			"sources": [
