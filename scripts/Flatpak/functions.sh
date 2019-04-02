@@ -39,6 +39,25 @@ function flatpak_build() {
     flatpak-builder --verbose --force-clean --ccache --repo=repo build $FLATPAK_APP_ID.json
 }
 
+
+function flatpak_build_noexit() {
+    if  [[ ${-/e} != $- ]] ; then set +e ; USE_E=1 ; else USE_E=0 ; fi
+
+    flatpak_build
+    echo "$?" > "FB_EXIT_CODE"
+
+    if [[ $USE_E -eq 1 ]] ; then set -e ; fi
+}
+
+function flatpak_build_noexit_check() {
+    if [[ -f "FB_EXIT_CODE" ]] ; then
+        if [[ $(cat "FB_EXIT_CODE") -ne 0 ]] ; then
+            >&2 echo "Error: flatpak-builder exit with non-zero"
+            exit FB_EXIT_CODE
+        fi
+    fi
+}
+
 function flatpak_bundle() {
     echo -e "\n"
     echo "###############################"

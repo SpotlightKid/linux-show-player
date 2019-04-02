@@ -26,7 +26,7 @@
 			"name": "Qt5",
 			"buildsystem": "simple",
 			"build-commands": [
-				"./configure --prefix=/app -skip qt3d -skip qtwebengine -skip qtwebchannel -skip qtwebglplugin -skip qttools -nomake examples -nomake tests -opensource -confirm-license",
+				"./configure --prefix=/app -opensource -confirm-license -nomake examples -nomake tests -skip qtwebengine -skip qtwebchannel -skip qtwebglplugin -skip qt3d -skip qtscript -skip qtdeclarative -skip qtquickcontrols -skip qtquickcontrols2 -skip qtserialbus -skip qttools",
 				"make -j `nproc`",
 				"make install"
 			],
@@ -42,7 +42,7 @@
 			"name": "PyQt5",
 			"buildsystem": "simple",
 			"build-commands": [
-				"python configure.py -sysroot=/app --assume-shared --confirm-license --no-designer-plugin --no-tools",
+				"python3 configure.py -sysroot=/app --assume-shared --confirm-license --no-designer-plugin --no-tools",
 				"make -j `nproc`",
 				"make install"
 			],
@@ -58,7 +58,7 @@
 					"name": "SIP",
 					"buildsystem": "simple",
 					"build-commands": [
-						"python configure.py --sysroot /app --sip-module PyQt5.sip",
+						"python3 configure.py --sysroot /app --sip-module PyQt5.sip",
 						"make",
 						"make install"
 					],

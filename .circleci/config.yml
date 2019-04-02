@@ -24,7 +24,7 @@ jobs:
       - checkout
 
       - run:
-          name: Install flatpak / flatpak-builder
+          name: SYSTEM ⟹ Install flatpak / flatpak-builder
           command: |
             sudo apt-get -qq update
             sudo apt-get install -y software-properties-common python3-software-properties
@@ -33,31 +33,34 @@ jobs:
             sudo apt-get install -y ostree flatpak flatpak-builder
 
       - restore_cache:
+          name: PYENV ⟹ Restore cache
           key: pyenv-python-3.6.8
 
       - run:
-          name: Install python 3.6.8 (pyenv)
+          name: PYENV ⟹ Install python 3.6.8
           command: |
             pyenv install --skip-existing 3.6.8
             pyenv global 3.6.8
 
       - save_cache:
+          name: PYENV ⟹ Save cache
           key: pyenv-python-3.6.8
           paths:
             - /opt/circleci/.pyenv/versions/3.6.8
 
       - run:
-          name: Install flathub Runtime & SDK
+          name: FLATPAK ⟹ Install flathub Runtime & SDK
           working_directory: ~/repo/scripts/Flatpak
           command: source functions.sh && flatpak_install_runtime
 
       - restore_cache:
+          name: PIP ⟹ Restore cache
           keys:
             - v2-pip-{{ checksum "scripts/Flatpak/requirements.txt" }}
             - v2-pip-
 
       - run:
-          name: Generate flatpak manifest
+          name: FLATPAK ⟹ Generate flatpak manifest
           working_directory: ~/repo/scripts/Flatpak
           command: |
             export BUILD_BRANCH=$CIRCLE_BRANCH
@@ -65,27 +68,35 @@ jobs:
             source functions.sh && flatpak_build_manifest
 
       - save_cache:
+          name: PIP ⟹ Save cache
           key: v2-pip-{{ checksum "scripts/Flatpak/requirements.txt" }}
           paths:
             - ~/repo/scripts/Flatpak/.venv
 
       - restore_cache:
+          name: FLATPAK BUILD ⟹ Restore cache
           keys:
             - v2-flatpak-{{ checksum "scripts/Flatpak/com.github.FrancescoCeruti.LinuxShowPlayer.json" }}
             - v2-flatpak-
 
       - run:
-          name: Build flatpak
+          name: FLATPAK BUILD ⟹ Build flatpak (no exit on error)
           working_directory: ~/repo/scripts/Flatpak
-          command: source functions.sh && flatpak_build
+          command: source functions.sh && flatpak_build_noexit
 
       - save_cache:
+          name: FLATPAK BUILD ⟹ Save cache
           key: v2-flatpak-{{ checksum "scripts/Flatpak/com.github.FrancescoCeruti.LinuxShowPlayer.json" }}
           paths:
             - ~/repo/scripts/Flatpak/.flatpak-builder
 
       - run:
-          name: Bundle flatpak
+          name: FLATPAK BUILD ⟹ Check if build failed
+          working_directory: ~/repo/scripts/Flatpak
+          command: source functions.sh && flatpak_build_noexit_check
+
+      - run:
+          name: FLATPAK ⟹ Bundle flatpak
           working_directory: ~/repo/scripts/Flatpak
           command: |
             export BUILD_BRANCH=$CIRCLE_BRANCH
