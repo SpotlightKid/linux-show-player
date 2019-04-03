@@ -42,7 +42,7 @@
 			"name": "PyQt5",
 			"buildsystem": "simple",
 			"build-commands": [
-				"python3 configure.py -sysroot=/app --assume-shared --confirm-license --no-designer-plugin --no-tools",
+				"python3 configure.py --sysroot /app --assume-shared --confirm-license --no-designer-plugin --no-tools",
 				"make -j `nproc`",
 				"make install"
 			],
@@ -58,8 +58,8 @@
 					"name": "SIP",
 					"buildsystem": "simple",
 					"build-commands": [
-						"python3 configure.py --sysroot /app --sip-module PyQt5.sip",
-						"make",
+						"python3 configure.py --configuration sip_flat.conf --sip-module PyQt5.sip",
+						"make -j `nproc`",
 						"make install"
 					],
 					"sources": [
@@ -67,6 +67,16 @@
 							"type": "archive",
 							"url": "https://www.riverbankcomputing.com/static/Downloads/sip/4.19.15/sip-4.19.15.tar.gz",
 							"sha256": "2b5c0b2c0266b467b365c21376d50dde61a3236722ab87ff1e8dacec283eb610"
+						},
+						{
+							"type": "shell",
+							"commands": [
+								"echo 'py_inc_dir = /usr/include/python%(py_major)%(py_minor)' >> sip_flat.conf",
+								"echo 'py_pylib_dir  = /usr/include/python%(py_major)%(py_minor)' >> sip_flat.conf",
+								"echo 'sip_bin_dir = %(sysroot)/usr/bin' >> sip_flat.conf",
+								"echo 'sip_inc_dir = %(sysroot)/usr/include/python%(py_major)%(py_minor)' >> sip_flat.conf",
+								"echo 'sip_module_dir = %(sysroot)/usr/lib/python%(py_major)/dist-packages' >> sip_flat.conf"
+							]
 						}
 					]
 				}
