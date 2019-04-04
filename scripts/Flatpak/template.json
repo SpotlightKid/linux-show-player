@@ -42,7 +42,7 @@
 			"name": "PyQt5",
 			"buildsystem": "simple",
 			"build-commands": [
-				"python3 configure.py --confirm-license --no-designer-plugin --no-tools --sysroot /app --sip /app/bin/sip --configuration pyqt5_flat.conf",
+				"python3 configure.py --confirm-license --no-designer-plugin --no-tools --sysroot /app --configuration pyqt5_flat.conf",
 				"make -j `nproc`",
 				"make install"
 			],
@@ -67,13 +67,25 @@
 					"name": "SIP",
 					"buildsystem": "simple",
 					"build-commands": [
-						"pip3 install --no-index --no-deps --prefix=${FLATPAK_DEST} sip-4.19.8-cp37-cp37m-manylinux1_x86_64.whl"
+						"python3 configure.py --sysroot /app --configuration sip_flat.conf --sip-module PyQt5.sip",
+						"make -j `nproc`",
+						"make install DESTDIR=/app"
 					],
 					"sources": [
 						{
-							"type": "file",
-							"url": "https://files.pythonhosted.org/packages/6f/42/538d33b0add4c0ae05bce1e0ee74fd0a13c3f1354fefdbf5d2077a8a866d/sip-4.19.8-cp37-cp37m-manylinux1_x86_64.whl",
-							"sha256": "7d69e9cf4f8253a3c0dfc5ba6bb9ac8087b8239851f22998e98cb35cfe497b68"
+							"type": "archive",
+							"url": "https://www.riverbankcomputing.com/static/Downloads/sip/4.19.15/sip-4.19.15.tar.gz",
+							"sha256": "2b5c0b2c0266b467b365c21376d50dde61a3236722ab87ff1e8dacec283eb610"
+						},
+						{
+							"type": "shell",
+							"commands": [
+								"echo 'py_inc_dir = /usr/include/python%(py_major).%(py_minor)m' >> sip_flat.conf",
+								"echo 'py_pylib_dir  = /usr/lib/python%(py_major).%(py_minor)' >> sip_flat.conf",
+								"echo 'sip_bin_dir = %(sysroot)/usr/bin' >> sip_flat.conf",
+								"echo 'sip_inc_dir = %(sysroot)/usr/include/python%(py_major).%(py_minor)' >> sip_flat.conf",
+								"echo 'sip_module_dir = %(sysroot)/usr/lib/python%(py_major).%(py_minor)/dist-packages' >> sip_flat.conf"
+							]
 						}
 					]
 				}
