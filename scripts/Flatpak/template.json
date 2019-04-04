@@ -55,6 +55,7 @@
 				{
 					"type": "shell",
 					"commands": [
+						"echo '[Qt 5.12]' >> pyqt5_flat.conf",
 						"echo 'py_inc_dir = /usr/include/python%(py_major).%(py_minor)m' >> pyqt5_flat.conf",
 						"echo 'py_pylib_dir  = /usr/lib/python%(py_major).%(py_minor)' >> pyqt5_flat.conf",
 						"echo 'qt_shared = True' >> pyqt5_flat.conf"
