@@ -44,7 +44,7 @@
 			"build-commands": [
 				"python3 configure.py --confirm-license --no-designer-plugin --no-tools --configuration pyqt5_flat.conf",
 				"make -j `nproc`",
-				"make install"
+				"make install DESTDIR=/app"
 			],
 			"sources": [
 				{
@@ -69,7 +69,7 @@
 					"build-commands": [
 						"python3 configure.py --configuration sip_flat.conf --sip-module PyQt5.sip --no-tools",
 						"make -j `nproc`",
-						"make install"
+						"make install DESTDIR=/app"
 					],
 					"sources": [
 						{
