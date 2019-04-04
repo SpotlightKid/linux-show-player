@@ -67,7 +67,7 @@
 					"name": "SIP",
 					"buildsystem": "simple",
 					"build-commands": [
-						"python3 configure.py --configuration sip_flat.conf --sip-module PyQt5.sip --no-tools",
+						"python3 configure.py --configuration sip_flat.conf --sip-module PyQt5.sip",
 						"make -j `nproc`",
 						"make install DESTDIR=/app"
 					],
