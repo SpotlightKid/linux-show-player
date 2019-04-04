@@ -53,7 +53,7 @@ function flatpak_build_noexit_check() {
     if [[ -f "FB_EXIT_CODE" ]] ; then
         if [[ $(cat "FB_EXIT_CODE") -ne 0 ]] ; then
             >&2 echo "Error: flatpak-builder exit with non-zero"
-            exit FB_EXIT_CODE
+            exit $(cat "FB_EXIT_CODE")
         fi
     fi
 }
