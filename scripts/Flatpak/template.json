@@ -42,7 +42,7 @@
 			"name": "PyQt5",
 			"buildsystem": "simple",
 			"build-commands": [
-				"python3 configure.py --confirm-license --no-designer-plugin --no-tools --configuration pyqt5_flat.conf --sip /app/usr/bin/sip",
+				"python3 configure.py --confirm-license --no-designer-plugin --no-tools --configuration pyqt5_flat.conf --sip /app/usr/bin/sip --sip-incdir /app/usr/include/python3.7m",
 				"make -j `nproc`",
 				"make install DESTDIR=/app"
 			],
