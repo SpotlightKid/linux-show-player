@@ -40,11 +40,19 @@
 		},
 		{
 			"name": "PyQt5",
-			"buildsystem": "simple",
-			"build-commands": [
-				"python3 configure.py --verbose --confirm-license --no-designer-plugin --no-tools --configuration pyqt5_flat.conf --sip /app/usr/bin/sip --sip-incdir /app/usr/include/python3.7m",
-				"make -j `nproc`",
-				"make install DESTDIR=/app"
+			"config-opts": [
+				"--assume-shared",
+				"--concatenate",
+				"--confirm-license",
+				"--no-designer-plugin",
+				"--no-dist-info",
+				"--no-docstrings",
+				"--no-qml-plugin",
+				"--no-qsci-api",
+				"--no-stubs",
+				"--no-tools",
+				"QMAKE_CFLAGS_RELEASE='-I/usr/include/python3.7m/'",
+				"QMAKE_CXXFLAGS_RELEASE='-I/usr/include/python3.7m/'"
 			],
 			"sources": [
 				{
@@ -53,26 +61,26 @@
 					"sha256": "3718ce847d824090fd5f95ff3f13847ee75c2507368d4cbaeb48338f506e59bf"
 				},
 				{
-					"type": "shell",
+					"type": "script",
 					"commands": [
-						"echo '[Qt 5.12]' >> pyqt5_flat.conf",
-						"echo 'py_inc_dir = /usr/include/python%(py_major).%(py_minor)m' >> pyqt5_flat.conf",
-						"echo 'py_pylib_dir  = /usr/lib/python%(py_major).%(py_minor)' >> pyqt5_flat.conf",
-						"echo 'pyqt_module_dir = /app/usr/lib/python%(py_major)/dist-packages' >> pyqt5_flat.conf",
-						"echo 'pyqt_bin_dir = /app/usr/bin' >> pyqt5_flat.conf",
-						"echo 'pyqt_sip_dir = /app/usr/share/sip/PyQt5' >> pyqt5_flat.conf",
-						"echo 'qt_shared = True' >> pyqt5_flat.conf"
-					]
+						"processed=`sed -e 's|prefix|sysroot|' <<< $@`",
+						"python3 configure.py $processed"
+					],
+					"dest-filename": "configure"
 				}
 			],
 			"modules": [
 				{
 					"name": "SIP",
-					"buildsystem": "simple",
-					"build-commands": [
-						"python3 configure.py --configuration sip_flat.conf --sip-module PyQt5.sip",
-						"make -j `nproc`",
-						"make install DESTDIR=/app"
+					"config-opts": [
+						"--no-dist-info",
+						"--no-stubs",
+						"--bindir=/app/bin",
+						"--destdir=/app/lib/python3.7/site-packages",
+						"--incdir=/app/include",
+						"--pyidir=/app/lib/python3.7/site-packages",
+						"--sipdir=/app/share/sip",
+						"--sip-module PyQt5.sip"
 					],
 					"sources": [
 						{
@@ -81,14 +89,23 @@
 							"sha256": "2b5c0b2c0266b467b365c21376d50dde61a3236722ab87ff1e8dacec283eb610"
 						},
 						{
-							"type": "shell",
+							"type": "script",
 							"commands": [
-								"echo 'py_inc_dir = /usr/include/python%(py_major).%(py_minor)m' >> sip_flat.conf",
-								"echo 'py_pylib_dir  = /usr/lib/python%(py_major).%(py_minor)' >> sip_flat.conf"
-							]
+								"processed=`sed -e 's|--prefix=/app||' <<< $@`",
+								"python3 configure.py $processed"
+							],
+							"dest-filename": "configure"
 						}
+					],
+					"cleanup": [
+						"/bin",
+						"/include"
 					]
 				}
+			],
+			"cleanup": [
+				"/bin",
+				"/include"
 			]
 		},
 		{
