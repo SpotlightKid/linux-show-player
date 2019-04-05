@@ -16,7 +16,8 @@
 		"--device=all"
 	],
 	"cleanup-commands": [
-		"pip3 uninstall --yes cython || true"
+		"pip3 uninstall --yes cython || true",
+		"pip3 uninstall --yes wheel || true"
 	],
 	"rename-appdata-file": "linuxshowplayer.appdata.xml",
 	"rename-desktop-file": "linuxshowplayer.desktop",
@@ -224,6 +225,20 @@
 					"commands": [
 						"autoreconf -fi"
 					]
+				}
+			]
+		},
+		{
+			"name": "python-wheel",
+			"buildsystem": "simple",
+			"build-commands": [
+				"pip3 install --no-index --no-deps --prefix=${FLATPAK_DEST} wheel-0.33.1-py2.py3-none-any.whl"
+			],
+			"sources": [
+				{
+					"type": "file",
+					"url": "https://files.pythonhosted.org/packages/96/ba/a4702cbb6a3a485239fbe9525443446203f00771af9ac000fa3ef2788201/wheel-0.33.1-py2.py3-none-any.whl",
+					"sha256": "8eb4a788b3aec8abf5ff68d4165441bc57420c9f64ca5f471f58c3969fe08668"
 				}
 			]
 		},
