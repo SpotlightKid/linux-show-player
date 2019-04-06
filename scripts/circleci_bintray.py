@@ -38,6 +38,7 @@ subprocess.run(
         "-ufrancescoceruti:{}".format(API_KEY),
         upload_url,
     ),
-    capture_output=True,
+    stdout=subprocess.PIPE,
+    stderr=subprocess.PIPE,
     check=True,
 )
