@@ -103,10 +103,16 @@ jobs:
 
       - run:
           name: BINTRAY ⟹ Upload bundle
-          context: Bintray
           working_directory: ~/repo/scripts
           command: python3 circleci_bintray.py Flatpak/out/LinuxShowPlayer.flatpak
 
       - store_artifacts:
           path: ~/repo/scripts/Flatpak/out
           destination: build
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build:
+          context: Bintray
