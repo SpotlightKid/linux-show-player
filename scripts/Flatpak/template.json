@@ -25,11 +25,22 @@
 	"modules": [
 		{
 			"name": "Qt5",
-			"buildsystem": "simple",
-			"build-commands": [
-				"./configure --prefix=/app -opensource -confirm-license -nomake examples -nomake tests -skip qtwebengine -skip qtwebchannel -skip qtwebglplugin -skip qt3d -skip qtscript -skip qtdeclarative -skip qtquickcontrols -skip qtquickcontrols2 -skip qtserialbus -skip qttools",
-				"make -j `nproc`",
-				"make install"
+			"config-opts": [
+				"-confirm-license", "-opensource",
+				"-shared",
+				"-nomake", "examples",
+				"-nomake", "tests",
+				"-skip", "qtwebengine",
+				"-skip", "qtwebchannel",
+				"-skip", "qtwebglplugin",
+				"-skip", "qt3d",
+				"-skip", "qtscript",
+				"-skip", "qtdeclarative",
+				"-skip", "qtquickcontrols",
+				"-skip", "qtquickcontrols2",
+				"-skip", "qtserialbus",
+				"-skip", "qttools",
+				"-gtk"
 			],
 			"sources": [
 				{
