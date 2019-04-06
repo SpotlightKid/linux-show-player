@@ -4,7 +4,6 @@ import os
 import pipenv_flatpak
 
 BRANCH = os.environ["BUILD_BRANCH"]
-COMMIT = os.environ["BUILD_COMMIT"]
 APP_ID = os.environ["FLATPAK_APP_ID"]
 PY_VERSION = os.environ["FLATPAK_PY_VERSION"]
 APP_MODULE = os.environ["FLATPAK_APP_MODULE"]
@@ -32,7 +31,6 @@ for index, module in enumerate(manifest["modules"]):
     if module["name"] == APP_MODULE:
         app_index = index
         module["sources"][0]["branch"] = BRANCH
-        module["sources"][0]["commit"] = COMMIT
         break
 
 # Generate python-modules from Pipfile.lock, insert them before the app-module

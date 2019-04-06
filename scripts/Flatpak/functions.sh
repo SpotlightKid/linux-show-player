@@ -22,8 +22,8 @@ function flatpak_install_runtime() {
     echo "###################################################"
     echo -e "\n"
 
-    flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-    flatpak install --user --noninteractive --assumeyes flathub $FLATPAK_INSTALL
+    flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+    flatpak install --noninteractive --assumeyes flathub $FLATPAK_INSTALL
 }
 
 function flatpak_build() {
