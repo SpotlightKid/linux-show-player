@@ -109,7 +109,8 @@ jobs:
               --publish \
               --override \
               out/linux-show-payer.flatpak \
-              francescoceruti/LinuxShowPlayer/ci/$PKG_VERSION
+              francescoceruti/LinuxShowPlayer/ci/$PKG_VERSION \
+              linux-show-player_$PKG_VERSION.flatpak
 
       - store_artifacts:
           path: ~/repo/scripts/Flatpak/out
