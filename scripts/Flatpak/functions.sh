@@ -67,7 +67,7 @@ function flatpak_bundle() {
 
     mkdir -p out
     # Create the bundle (without blocking the script)
-    flatpak build-bundle repo out/LinuxShowPlayer.flatpak $FLATPAK_APP_ID $BUILD_BRANCH &
+    flatpak build-bundle repo out/linux-show-payer.flatpak $FLATPAK_APP_ID $BUILD_BRANCH &
     # Print elapsed time
     watch_process $!
 }

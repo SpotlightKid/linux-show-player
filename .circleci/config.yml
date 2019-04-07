@@ -40,7 +40,7 @@ jobs:
           name: PYENV ⟹ Save cache
           key: pyenv-python-3.6.8
           paths:
-            - /opt/circleci/.pyenv/versions/3.6.8
+            - ~/.pyenv/versions/3.6.8
 
       - run:
           name: FLATPAK ⟹ Install flathub Runtime & SDK
@@ -50,8 +50,7 @@ jobs:
       - restore_cache:
           name: PIP ⟹ Restore cache
           keys:
-            - v2-pip-{{ checksum "scripts/Flatpak/requirements.txt" }}
-            - v2-pip-
+            - v3-pip-{{ checksum "scripts/Flatpak/requirements.txt" }}
 
       - run:
           name: FLATPAK ⟹ Generate flatpak manifest
@@ -62,7 +61,7 @@ jobs:
 
       - save_cache:
           name: PIP ⟹ Save cache
-          key: v2-pip-{{ checksum "scripts/Flatpak/requirements.txt" }}
+          key: v3-pip-{{ checksum "scripts/Flatpak/requirements.txt" }}
           paths:
             - ~/repo/scripts/Flatpak/.venv
 
@@ -97,8 +96,23 @@ jobs:
 
       - run:
           name: BINTRAY ⟹ Upload bundle
-          working_directory: ~/repo/scripts
-          command: python3 circleci_bintray.py Flatpak/out/LinuxShowPlayer.flatpak
+          working_directory: ~/repo/scripts/Flatpak
+          command: |
+            curl -fL https://getcli.jfrog.io | sh
+            chmod + x jfrog
+
+            PKG_VERSION=$(date '+%Y%m%d')-$CIRCLE_BRANCH-$CIRCLE_BUILD_NUM
+
+            ./jfrog bt config \
+              --user francescoceruti \
+              --key $BINTRAY_API_KEY \
+              --license GPL-3.0
+
+            ./jfrog bt upload \
+              --publish \
+              --override \
+              out/linux-show-payer.flatpak \
+              francescoceruti/LinuxShowPlayer/ci/$PKG_VERSION
 
       - store_artifacts:
           path: ~/repo/scripts/Flatpak/out
