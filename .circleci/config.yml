@@ -100,9 +100,10 @@ jobs:
             PKG_VERSION=$(date '+%Y%m%d')-$CIRCLE_BRANCH-$CIRCLE_BUILD_NUM
 
             ./jfrog bt config \
+              --interactive false \
               --user francescoceruti \
               --key $BINTRAY_API_KEY \
-              --license GPL-3.0
+              --licenses GPL-3.0
 
             ./jfrog bt upload \
               --publish \
